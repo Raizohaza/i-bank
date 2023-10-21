@@ -2,6 +2,7 @@ import { Controller } from '@nestjs/common';
 import { Logger } from '@nestjs/common/services';
 import {
   ClientOptions,
+  ClientProxy,
   ClientProxyFactory,
   MessagePattern,
   Payload,
@@ -9,11 +10,15 @@ import {
 } from '@nestjs/microservices';
 import { AuthService } from './auth.service';
 import { CreateAuthDto, UpdateAuthDto } from '@lib/shared/dto';
-import { Get } from '@nestjs/common/decorators';
+import { Get, Inject } from '@nestjs/common/decorators';
+import { Observable } from 'rxjs';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    @Inject('MATH_SERVICE') private client: ClientProxy
+  ) {}
 
   @MessagePattern('createAuth')
   create(@Payload() createAuthDto: CreateAuthDto) {
@@ -24,9 +29,12 @@ export class AuthController {
   findAll() {
     return this.authService.findAll();
   }
-
+  @Get('findAll')
+  findAll2() {
+    return this.authService.findAll();
+  }
   @Get('findAllAuth')
-  findAllByRestFul() {
+  findAllByRestFul(): Observable<string> {
     const microservicesOptions: ClientOptions = {
       transport: Transport.TCP,
       options: {
@@ -37,10 +45,9 @@ export class AuthController {
     const logger = new Logger('auth');
     logger.log('This action adds a new auth');
     const client = ClientProxyFactory.create(microservicesOptions);
-    client
-      .send('findAllAuth', {})
-      .subscribe((res) => logger.log('This action adds a new auth'));
+    return client.send<string>('findAllAuth', {});
   }
+
   @MessagePattern('findOneAuth')
   findOne(@Payload() id: number) {
     return this.authService.findOne(id);

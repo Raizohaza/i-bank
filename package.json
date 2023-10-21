@@ -4,7 +4,8 @@
   "license": "MIT",
   "scripts": {
     "start": "nx serve",
-    "start2": "node ./dist/apps/api-gateway/main.js -p 6789",
+    "start2": "node ./dist/apps/api-gateway/main.js 6789",
+    "start3": "nx build && node ./dist/apps/api-gateway/main.js 6969",
     "build": "nx build",
     "test": "nx test"
   },
