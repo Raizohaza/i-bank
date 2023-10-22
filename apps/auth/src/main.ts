@@ -14,11 +14,11 @@ async function bootstrap() {
     AppModule,
     {
       transport: Transport.TCP,
-      options: { port: 6789 },
+      options: { port: 3001 },
     }
   );
   await app.listen();
-  Logger.log(`🚀 Application is running on: http://localhost:${6789}/${'api'}`);
+  Logger.log(`🚀 Application is running on: http://localhost:${3001}`);
 }
 
 bootstrap();
