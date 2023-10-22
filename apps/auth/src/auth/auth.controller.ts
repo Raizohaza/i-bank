@@ -17,6 +17,10 @@ export class AuthController {
   findAll() {
     return this.authService.findAll();
   }
+  @MessagePattern('findAllAuth2')
+  findAll2() {
+    return this.authService.findAll();
+  }
 
   @MessagePattern('findOneAuth')
   findOne(@Payload() id: number) {
