@@ -12,10 +12,10 @@ import {
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, Observable } from 'rxjs';
 import { CreateAuthDto, UpdateAuthDto } from '@lib/shared/dto';
-import { ConfigService } from '@nestjs/config';
 
 @Controller('auth')
 export class AuthController {
+  private readonly logger = new Logger(AuthController.name);
   constructor(
     @Inject('AUTH_SERVICE') private readonly authService: ClientProxy
   ) {}
@@ -30,15 +30,6 @@ export class AuthController {
 
   @Get()
   async findAll() {
-    const logger = new Logger('auth');
-    // logger.log('This action adds a new auth', {
-    //   transport: this.configService.get('transport'),
-    //   options: this.configService.get('options'),
-    // });
-    // console.log('This action adds a new auth', {
-    //   transport: this.configService.get('transport'),
-    //   options: this.configService.get('options'),
-    // });
     return await firstValueFrom(
       this.authService.send<string>('findAllAuth2', {})
     );
