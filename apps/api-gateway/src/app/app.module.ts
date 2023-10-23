@@ -4,22 +4,29 @@ import { ClientProxyFactory } from '@nestjs/microservices';
 import { ConfigService } from '../config/configuration';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AuthController } from './auth.controller';
+import { UserController } from './user.controller';
 import { AuthGuard } from './guards/authorization.guard';
-import { PermissionGuard } from './guards/permission.guard';
+// import { PermissionGuard } from './guards/permission.guard';
 
 @Module({
   imports: [ConfigService],
-  controllers: [AppController, AuthController],
+  controllers: [AppController, UserController],
   providers: [
     AppService,
     ConfigService,
     {
-      provide: 'AUTH_SERVICE',
+      provide: 'USER_SERVICE',
       useFactory: (configService: ConfigService) => {
-        const authServiceOptions = configService.get('authService');
-        console.log(authServiceOptions);
-        return ClientProxyFactory.create(authServiceOptions);
+        const userServiceOptions = configService.get('userService');
+        return ClientProxyFactory.create(userServiceOptions);
+      },
+      inject: [ConfigService],
+    },
+    {
+      provide: 'TOKEN_SERVICE',
+      useFactory: (configService: ConfigService) => {
+        const tokenServiceOptions = configService.get('tokenService');
+        return ClientProxyFactory.create(tokenServiceOptions);
       },
       inject: [ConfigService],
     },
@@ -27,10 +34,10 @@ import { PermissionGuard } from './guards/permission.guard';
       provide: APP_GUARD,
       useClass: AuthGuard,
     },
-    {
-      provide: APP_GUARD,
-      useClass: PermissionGuard,
-    },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: PermissionGuard,
+    // },
   ],
 })
 export class AppModule {}

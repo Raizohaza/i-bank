@@ -5,12 +5,19 @@ export class ConfigService {
   constructor() {
     this.envConfig = {};
     this.envConfig.port = parseInt(process.env.PORT, 10) || 3000;
-    this.envConfig.authService = {
+    this.envConfig.userService = {
       transport: Transport.TCP,
       options: {
         host: '127.0.0.1',
         port: parseInt(process.env.PORT, 10) || 3001,
       },
+    };
+    this.envConfig.tokenService = {
+      options: {
+        host: '127.0.0.1',
+        port: parseInt(process.env.PORT, 10) || 3002,
+      },
+      transport: Transport.TCP,
     };
   }
   get(key: string): unknown {

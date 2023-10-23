@@ -14,13 +14,13 @@ export class AuthGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
     @Inject('TOKEN_SERVICE') private readonly tokenServiceClient: ClientProxy,
-    @Inject('USER_SERVICE') private readonly userServiceClient: ClientProxy,
+    @Inject('USER_SERVICE') private readonly userServiceClient: ClientProxy
   ) {}
 
   public async canActivate(context: ExecutionContext): Promise<boolean> {
     const secured = this.reflector.get<string[]>(
       'secured',
-      context.getHandler(),
+      context.getHandler()
     );
 
     if (!secured) {
@@ -31,7 +31,7 @@ export class AuthGuard implements CanActivate {
     const userTokenInfo = await firstValueFrom(
       this.tokenServiceClient.send('token_decode', {
         token: request.headers.authorization,
-      }),
+      })
     );
 
     if (!userTokenInfo || !userTokenInfo.data) {
@@ -41,12 +41,12 @@ export class AuthGuard implements CanActivate {
           data: null,
           errors: null,
         },
-        userTokenInfo.status,
+        userTokenInfo.status
       );
     }
 
     const userInfo = await firstValueFrom(
-      this.userServiceClient.send('user_get_by_id', userTokenInfo.data.userId),
+      this.userServiceClient.send('user_get_by_id', userTokenInfo.data.userId)
     );
 
     request.user = userInfo.user;
