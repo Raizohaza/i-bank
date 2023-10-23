@@ -19,6 +19,13 @@ export class ConfigService {
       },
       transport: Transport.TCP,
     };
+    this.envConfig.permissionService = {
+      options: {
+        host: '127.0.0.1',
+        port: parseInt(process.env.PORT, 10) || 3003,
+      },
+      transport: Transport.TCP,
+    };
   }
   get(key: string): unknown {
     return this.envConfig[key];

@@ -6,7 +6,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserController } from './user.controller';
 import { AuthGuard } from './guards/authorization.guard';
-// import { PermissionGuard } from './guards/permission.guard';
+import { PermissionGuard } from './guards/permission.guard';
 
 @Module({
   imports: [ConfigService],
@@ -31,13 +31,22 @@ import { AuthGuard } from './guards/authorization.guard';
       inject: [ConfigService],
     },
     {
+      provide: 'PERMISSION_SERVICE',
+      useFactory: (configService: ConfigService) => {
+        return ClientProxyFactory.create(
+          configService.get('permissionService')
+        );
+      },
+      inject: [ConfigService],
+    },
+    {
       provide: APP_GUARD,
       useClass: AuthGuard,
     },
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: PermissionGuard,
-    // },
+    {
+      provide: APP_GUARD,
+      useClass: PermissionGuard,
+    },
   ],
 })
 export class AppModule {}

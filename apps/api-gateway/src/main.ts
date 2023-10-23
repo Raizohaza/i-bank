@@ -8,13 +8,11 @@ async function bootstrap() {
   const options = new DocumentBuilder()
     .setTitle('API docs')
     .addTag('users')
-    .addTag('tasks')
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api', app, document);
   const globalPrefix = 'api';
-  // app.setGlobalPrefix(globalPrefix);
   const port = process.env.PORT || process.argv[2] || 3333;
   await app.listen(port);
   Logger.log(

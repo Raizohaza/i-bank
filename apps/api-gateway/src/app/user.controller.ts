@@ -1,38 +1,49 @@
 import {
+  Body,
   Controller,
   Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  Logger,
-  Inject,
   HttpException,
   HttpStatus,
+  Inject,
+  Logger,
+  Param,
+  Post,
   Put,
   Req,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { firstValueFrom, Observable } from 'rxjs';
+import {
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiTags,
+  ApiHeader,
+} from '@nestjs/swagger';
+import { firstValueFrom } from 'rxjs';
 import { Authorization } from './decorators/authorization.decorator';
-import { ApiTags, ApiOkResponse, ApiCreatedResponse } from '@nestjs/swagger';
 import { IAuthorizedRequest } from './interfaces/common/authorized-request.interface';
-import { IServiveTokenCreateResponse } from './interfaces/token/service-token-create-response.interface';
-import { IServiceTokenDestroyResponse } from './interfaces/token/service-token-destroy-response.interface';
-import { ConfirmUserResponseDto } from './interfaces/user/dto/confirm-user-response.dto';
-import { ConfirmUserDto } from './interfaces/user/dto/confirm-user.dto';
-import { CreateUserResponseDto } from './interfaces/user/dto/create-user-response.dto';
-import { GetUserByTokenResponseDto } from './interfaces/user/dto/get-user-by-token-response.dto';
-import { LoginUserResponseDto } from './interfaces/user/dto/login-user-response.dto';
-import { LoginUserDto } from './interfaces/user/dto/login-user.dto';
-import { LogoutUserResponseDto } from './interfaces/user/dto/logout-user-response.dto';
-import { IServiceUserConfirmResponse } from './interfaces/user/service-user-confirm-response.interface';
-import { IServiceUserCreateResponse } from './interfaces/user/service-user-create-response.interface';
-import { IServiceUserGetByIdResponse } from './interfaces/user/service-user-get-by-id-response.interface';
-import { IServiceUserSearchResponse } from './interfaces/user/service-user-search-response.interface';
-import { CreateUserDto } from './interfaces/user/dto/create-user.dto';
-
+import {
+  IServiveTokenCreateResponse,
+  IServiceTokenDestroyResponse,
+} from './interfaces/token';
+import {
+  ConfirmUserDto,
+  ConfirmUserResponseDto,
+  CreateUserDto,
+  CreateUserResponseDto,
+  GetUserByTokenResponseDto,
+  IServiceUserConfirmResponse,
+  IServiceUserCreateResponse,
+  IServiceUserGetByIdResponse,
+  IServiceUserSearchResponse,
+  LoginUserDto,
+  LoginUserResponseDto,
+  LogoutUserResponseDto,
+} from './interfaces/user';
+import { TokenUserDto } from './interfaces/user/dto/token-user.dto';
+@ApiHeader({
+  name: 'Authorization',
+  description: 'Authorization token',
+})
 @Controller('user')
 @ApiTags('users')
 export class UserController {

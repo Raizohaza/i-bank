@@ -11,7 +11,7 @@ import { IUserConfirmResponse } from './interfaces/user-confirm-response.interfa
 export class UserController {
   constructor(
     private readonly userService: UserService,
-    @Inject('MAILER_SERVICE') private readonly mailerServiceClient: ClientProxy,
+    @Inject('MAILER_SERVICE') private readonly mailerServiceClient: ClientProxy
   ) {}
 
   @MessagePattern('user_search_by_credentials')
@@ -154,7 +154,7 @@ export class UserController {
           userParams.is_confirmed = false;
           const createdUser = await this.userService.createUser(userParams);
           const userLink = await this.userService.createUserLink(
-            createdUser.id,
+            createdUser.id
           );
           delete createdUser.password;
           result = {
@@ -163,19 +163,17 @@ export class UserController {
             user: createdUser,
             errors: null,
           };
-          this.mailerServiceClient
-            .send('mail_send', {
-              to: createdUser.email,
-              subject: 'Email confirmation',
-              html: `<center>
+          this.mailerServiceClient.send('mail_send', {
+            to: createdUser.email,
+            subject: 'Email confirmation',
+            html: `<center>
               <b>Hi there, please confirm your email to use Smoothday.</b><br>
               Use the following link for this.<br>
               <a href="${this.userService.getConfirmationLink(
-                userLink.link,
+                userLink.link
               )}"><b>Confirm The Email</b></a>
               </center>`,
-            })
-            .toPromise();
+          });
         } catch (e) {
           result = {
             status: HttpStatus.PRECONDITION_FAILED,
