@@ -34,7 +34,7 @@ export class TokenService {
   }
 
   public async decodeToken(token: string) {
-    const tokenModel = await this.tokenModel.find({
+    const tokenModel = this.tokenModel.find({
       token,
     });
     let result = null;

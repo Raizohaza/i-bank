@@ -16,7 +16,7 @@ import {
   ApiCreatedResponse,
   ApiOkResponse,
   ApiTags,
-  ApiHeader,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { firstValueFrom } from 'rxjs';
 import { Authorization } from './decorators/authorization.decorator';
@@ -39,11 +39,7 @@ import {
   LoginUserResponseDto,
   LogoutUserResponseDto,
 } from './interfaces/user';
-import { TokenUserDto } from './interfaces/user/dto/token-user.dto';
-@ApiHeader({
-  name: 'Authorization',
-  description: 'Authorization token',
-})
+@ApiBearerAuth()
 @Controller('user')
 @ApiTags('users')
 export class UserController {
