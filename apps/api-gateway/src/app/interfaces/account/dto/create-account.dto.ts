@@ -7,7 +7,8 @@ export class CreateAccountDto {
   })
   customerId: string;
   @ApiProperty({
-    example: 'PAY',
+    enum: ['PAYROLL', 'SAVING'],
+    example: 'PAYROLL',
   })
   type: string;
   @ApiProperty({

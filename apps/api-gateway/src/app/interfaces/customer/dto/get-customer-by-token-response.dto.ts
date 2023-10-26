@@ -1,9 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { BaseReponse } from '../../common/base-reponse.dto';
 import { ICustomer } from '../customer.interface';
 
-export class GetCustomerByTokenResponseDto {
-  @ApiProperty({ example: 'customer_get_by_id_success' })
-  message: string;
+export class GetCustomerByTokenResponseDto extends BaseReponse {
   @ApiProperty({
     example: {
       customer: {
@@ -17,6 +16,4 @@ export class GetCustomerByTokenResponseDto {
   data: {
     customer: ICustomer;
   };
-  @ApiProperty({ example: null, nullable: true })
-  errors: { [key: string]: unknown };
 }

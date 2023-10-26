@@ -4,6 +4,7 @@ import {
   CanActivate,
   ExecutionContext,
   HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
 import { Reflector } from '@nestjs/core';
@@ -29,13 +30,13 @@ export class AuthGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest();
-    console.log(request.headers.authorization.split(' ')[1]);
+    const token = request?.headers?.authorization?.split(' ')?.[1];
+    if (!token) {
+      throw new HttpException('Invalid Token', HttpStatus.BAD_REQUEST);
+    }
     const customerTokenInfo = await firstValueFrom(
-      this.tokenServiceClient.send('token_decode', {
-        token: request.headers.authorization.split(' ')[1],
-      })
+      this.tokenServiceClient.send('token_decode', { token })
     );
-    console.log(customerTokenInfo);
     if (!customerTokenInfo || !customerTokenInfo.data) {
       throw new HttpException(
         {

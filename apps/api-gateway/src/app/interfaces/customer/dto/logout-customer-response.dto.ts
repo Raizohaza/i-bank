@@ -1,10 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { BaseReponse } from '../../common/base-reponse.dto';
 
-export class LogoutCustomerResponseDto {
-  @ApiProperty({ example: 'token_destroy_success' })
-  message: string;
+export class LogoutCustomerResponseDto extends BaseReponse {
   @ApiProperty({ example: null, nullable: true, type: 'null' })
   data: null;
-  @ApiProperty({ example: null, nullable: true })
-  errors: { [key: string]: unknown };
 }

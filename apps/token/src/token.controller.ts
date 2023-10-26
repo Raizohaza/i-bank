@@ -62,7 +62,6 @@ export class TokenController {
     token: string;
   }): Promise<ITokenDataResponse> {
     const tokenData = await this.tokenService.decodeToken(data.token);
-    console.log({ tokenData, data });
     return {
       status: tokenData ? HttpStatus.OK : HttpStatus.UNAUTHORIZED,
       message: tokenData ? 'token_decode_success' : 'token_decode_unauthorized',

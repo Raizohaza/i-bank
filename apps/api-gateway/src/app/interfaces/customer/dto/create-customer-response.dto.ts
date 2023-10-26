@@ -1,9 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { BaseReponse } from '../../common/base-reponse.dto';
 import { ICustomer } from '../customer.interface';
 
-export class CreateCustomerResponseDto {
-  @ApiProperty({ example: 'customer_create_success' })
-  message: string;
+export class CreateCustomerResponseDto extends BaseReponse {
   @ApiProperty({
     example: {
       customer: {
@@ -18,6 +17,4 @@ export class CreateCustomerResponseDto {
     customer: ICustomer;
     token: string;
   };
-  @ApiProperty({ example: null, nullable: true })
-  errors: { [key: string]: unknown };
 }

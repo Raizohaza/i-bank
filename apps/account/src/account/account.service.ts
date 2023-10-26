@@ -1,11 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { CreateAccountDto } from './dto/create-account.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { UpdateAccountDto } from './dto/update-account.dto';
+import { IAccount } from './interfaces/account.interface';
 
 @Injectable()
 export class AccountService {
-  create(createAccountDto: CreateAccountDto) {
-    return 'This action adds a new account';
+  constructor(
+    @InjectModel('Account') private readonly accountModel: Model<IAccount>
+  ) {}
+  async create(createAccountDto: IAccount) {
+    const newAccount = new this.accountModel(createAccountDto);
+    return await newAccount.save();
   }
 
   findAll() {
@@ -15,7 +21,9 @@ export class AccountService {
   findOne(id: number) {
     return `This action returns a #${id} account`;
   }
-
+  async findByUser(userId: string) {
+    return await this.accountModel.find({ customerId: userId });
+  }
   update(id: number, updateAccountDto: UpdateAccountDto) {
     return `This action updates a #${id} account`;
   }
