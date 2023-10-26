@@ -7,11 +7,11 @@ import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { Transport, TcpOptions } from '@nestjs/microservices';
-import { EmployeeModule } from './employee/employee.module';
+import { TransactionModule } from './transaction/transaction.module';
 
 async function bootstrap() {
-  const port = new ConfigService().get('port') || 3005;
-  const app = await NestFactory.createMicroservice(EmployeeModule, {
+  const port = new ConfigService().get('port') || 3006;
+  const app = await NestFactory.createMicroservice(TransactionModule, {
     transport: Transport.TCP,
     options: {
       host: '0.0.0.0',
@@ -21,4 +21,5 @@ async function bootstrap() {
   await app.listen();
   Logger.log(`🚀 Application is running on: http://localhost:${port}}`);
 }
+
 bootstrap();
