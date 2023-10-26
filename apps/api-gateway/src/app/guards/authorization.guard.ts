@@ -14,7 +14,8 @@ export class AuthGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
     @Inject('TOKEN_SERVICE') private readonly tokenServiceClient: ClientProxy,
-    @Inject('USER_SERVICE') private readonly userServiceClient: ClientProxy
+    @Inject('CUSTOMER_SERVICE')
+    private readonly customerServiceClient: ClientProxy
   ) {}
 
   public async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -28,29 +29,32 @@ export class AuthGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest();
-    console.log(request.headers.authorization);
-    const userTokenInfo = await firstValueFrom(
+    console.log(request.headers.authorization.split(' ')[1]);
+    const customerTokenInfo = await firstValueFrom(
       this.tokenServiceClient.send('token_decode', {
         token: request.headers.authorization.split(' ')[1],
       })
     );
-    console.log(userTokenInfo);
-    if (!userTokenInfo || !userTokenInfo.data) {
+    console.log(customerTokenInfo);
+    if (!customerTokenInfo || !customerTokenInfo.data) {
       throw new HttpException(
         {
-          message: userTokenInfo.message,
+          message: customerTokenInfo.message,
           data: null,
           errors: null,
         },
-        userTokenInfo.status
+        customerTokenInfo.status
       );
     }
 
-    const userInfo = await firstValueFrom(
-      this.userServiceClient.send('user_get_by_id', userTokenInfo.data.userId)
+    const customerInfo = await firstValueFrom(
+      this.customerServiceClient.send(
+        'customer_get_by_id',
+        customerTokenInfo.data.customerId
+      )
     );
 
-    request.user = userInfo.user;
+    request.customer = customerInfo.customer;
     return true;
   }
 }

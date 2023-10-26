@@ -1,5 +1,5 @@
 export class ConfigService {
-  private readonly envConfig: { [key: string]: any } = null;
+  private readonly envConfig: { [key: string]: unknown } = null;
 
   constructor() {
     this.envConfig = {
@@ -7,7 +7,7 @@ export class ConfigService {
     };
   }
 
-  get(key: string): any {
+  get(key: string): unknown {
     return this.envConfig[key];
   }
 }

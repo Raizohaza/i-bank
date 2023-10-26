@@ -1,11 +1,11 @@
 import { Transport } from '@nestjs/microservices';
 
 export class ConfigService {
-  private readonly envConfig: { [key: string]: any } = null;
+  private readonly envConfig: { [key: string]: unknown } = null;
   constructor() {
     this.envConfig = {};
     this.envConfig.port = parseInt(process.env.PORT, 10) || 3000;
-    this.envConfig.userService = {
+    this.envConfig.customerService = {
       transport: Transport.TCP,
       options: {
         host: '127.0.0.1',

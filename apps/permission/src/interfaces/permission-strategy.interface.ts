@@ -1,5 +1,8 @@
-import { IUser } from './user.interface';
+import { ICustomer } from './customer.interface';
 
 export interface IPermissionStrategy {
-  getAllowedPermissions: (user: IUser, permissions: string[]) => string[];
+  getAllowedPermissions: (
+    customer: ICustomer,
+    permissions: string[],
+  ) => string[];
 }

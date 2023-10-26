@@ -11,10 +11,10 @@ export class TokenService {
     @InjectModel('Token') private readonly tokenModel: Model<IToken>,
   ) {}
 
-  public createToken(userId: string): Promise<IToken> {
+  public createToken(customerId: string): Promise<IToken> {
     const token = this.jwtService.sign(
       {
-        userId,
+        customerId,
       },
       {
         expiresIn: 30 * 24 * 60 * 60,
@@ -22,34 +22,38 @@ export class TokenService {
     );
 
     return new this.tokenModel({
-      user_id: userId,
+      customer_id: customerId,
       token,
     }).save();
   }
 
-  public deleteTokenForUserId(userId: string): Query<any, any> {
-    return this.tokenModel.remove({
-      user_id: userId,
+  public async deleteTokenForCustomerId(
+    customerId: string,
+  ): Promise<Query<unknown, unknown>> {
+    return await this.tokenModel.remove({
+      customer_id: customerId,
     });
   }
 
   public async decodeToken(token: string) {
-    const tokenModel = this.tokenModel.find({
+    const tokenModel = await this.tokenModel.find({
       token,
     });
     let result = null;
 
     if (tokenModel && tokenModel[0]) {
       try {
-        const tokenData = this.jwtService.decode(tokenModel[0].token) as {
+        const tokenData = (await this.jwtService.decode(
+          tokenModel[0].token,
+        )) as {
           exp: number;
-          userId: any;
+          customerId: unknown;
         };
         if (!tokenData || tokenData.exp <= Math.floor(+new Date() / 1000)) {
           result = null;
         } else {
           result = {
-            userId: tokenData.userId,
+            customerId: tokenData.customerId,
           };
         }
       } catch (e) {

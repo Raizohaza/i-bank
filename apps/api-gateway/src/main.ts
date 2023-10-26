@@ -7,7 +7,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
   const options = new DocumentBuilder()
     .setTitle('API docs')
-    .addTag('users')
+    .addTag('customers')
     .setVersion('1.0')
     .addBearerAuth()
     .build();

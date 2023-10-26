@@ -4,21 +4,21 @@ import { ClientProxyFactory } from '@nestjs/microservices';
 import { ConfigService } from '../config/configuration';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UserController } from './user.controller';
+import { CustomerController } from './customer.controller';
 import { AuthGuard } from './guards/authorization.guard';
 import { PermissionGuard } from './guards/permission.guard';
 
 @Module({
   imports: [ConfigService],
-  controllers: [AppController, UserController],
+  controllers: [AppController, CustomerController],
   providers: [
     AppService,
     ConfigService,
     {
-      provide: 'USER_SERVICE',
+      provide: 'CUSTOMER_SERVICE',
       useFactory: (configService: ConfigService) => {
-        const userServiceOptions = configService.get('userService');
-        return ClientProxyFactory.create(userServiceOptions);
+        const customerServiceOptions = configService.get('customerService');
+        return ClientProxyFactory.create(customerServiceOptions);
       },
       inject: [ConfigService],
     },

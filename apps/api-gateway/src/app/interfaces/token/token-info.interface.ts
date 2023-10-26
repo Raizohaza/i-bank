@@ -1,5 +1,5 @@
 export interface ITokenInfo {
   data: {
-    userId: string;
+    customerId: string;
   };
 }

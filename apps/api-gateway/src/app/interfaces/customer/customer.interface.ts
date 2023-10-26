@@ -1,5 +1,4 @@
 export interface ICustomer {
-  id?: string;
+  id: string;
   email: string;
-  is_confirmed: boolean;
 }

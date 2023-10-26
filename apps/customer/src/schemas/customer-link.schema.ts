@@ -4,15 +4,23 @@ function transformValue(doc, ret: { [key: string]: unknown }) {
   delete ret._id;
 }
 
-export const TokenSchema = new mongoose.Schema(
+function generateLink() {
+  return Math.random().toString(36).replace('0.', '');
+}
+
+export const CustomerLinkSchema = new mongoose.Schema(
   {
     customer_id: {
       type: String,
       required: [true, 'Customer can not be empty'],
     },
-    token: {
+    is_used: {
+      type: Boolean,
+      default: false,
+    },
+    link: {
       type: String,
-      required: [true, 'Token can not be empty'],
+      default: generateLink(),
     },
   },
   {
@@ -26,5 +34,5 @@ export const TokenSchema = new mongoose.Schema(
       versionKey: false,
       transform: transformValue,
     },
-  },
+  }
 );

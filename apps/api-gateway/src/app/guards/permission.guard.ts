@@ -15,13 +15,13 @@ export class PermissionGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
     @Inject('PERMISSION_SERVICE')
-    private readonly permissionServiceClient: ClientProxy,
+    private readonly permissionServiceClient: ClientProxy
   ) {}
 
   public async canActivate(context: ExecutionContext): Promise<boolean> {
     const permission = this.reflector.get<string[]>(
       'permission',
-      context.getHandler(),
+      context.getHandler()
     );
 
     if (!permission) {
@@ -33,8 +33,8 @@ export class PermissionGuard implements CanActivate {
     const permissionInfo = await firstValueFrom(
       this.permissionServiceClient.send('permission_check', {
         permission,
-        user: request.user,
-      }),
+        customer: request.customer,
+      })
     );
 
     if (!permissionInfo || permissionInfo.status !== HttpStatus.OK) {
@@ -44,7 +44,7 @@ export class PermissionGuard implements CanActivate {
           data: null,
           errors: null,
         },
-        permissionInfo.status,
+        permissionInfo.status
       );
     }
 

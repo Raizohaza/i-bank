@@ -3,7 +3,7 @@ import { MessagePattern } from '@nestjs/microservices';
 import { ConfirmedStrategyService } from './services/confirmed-strategy.service';
 import { permissions } from './constants/permissions';
 import { IPermissionCheckResponse } from './interfaces/permission-check-response.interface';
-import { IUser } from './interfaces/user.interface';
+import { ICustomer } from './interfaces/customer.interface';
 
 @Controller()
 export class PermissionController {
@@ -11,12 +11,12 @@ export class PermissionController {
 
   @MessagePattern('permission_check')
   public permissionCheck(permissionParams: {
-    user: IUser;
+    customer: ICustomer;
     permission: string;
   }): IPermissionCheckResponse {
     let result: IPermissionCheckResponse;
 
-    if (!permissionParams || !permissionParams.user) {
+    if (!permissionParams || !permissionParams.customer) {
       result = {
         status: HttpStatus.BAD_REQUEST,
         message: 'permission_check_bad_request',
@@ -24,7 +24,7 @@ export class PermissionController {
       };
     } else {
       const allowedPermissions = this.confirmedStrategy.getAllowedPermissions(
-        permissionParams.user,
+        permissionParams.customer,
         permissions,
       );
       const isAllowed = allowedPermissions.includes(

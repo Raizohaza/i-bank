@@ -1,4 +1,4 @@
-import { Controller, HttpStatus } from '@nestjs/common';
+import { Controller, HttpStatus, Logger } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
 import { TokenService } from './services/token.service';
 import { ITokenResponse } from './interfaces/token-response.interface';
@@ -8,13 +8,17 @@ import { ITokenDestroyResponse } from './interfaces/token-destroy-response.inter
 @Controller('token')
 export class TokenController {
   constructor(private readonly tokenService: TokenService) {}
-
+  private readonly logger = new Logger(TokenController.name);
   @MessagePattern('token_create')
-  public async createToken(data: { userId: string }): Promise<ITokenResponse> {
+  public async createToken(data: {
+    customerId: string;
+  }): Promise<ITokenResponse> {
     let result: ITokenResponse;
-    if (data && data.userId) {
+    if (data && data.customerId) {
       try {
-        const createResult = await this.tokenService.createToken(data.userId);
+        const createResult = await this.tokenService.createToken(
+          data.customerId,
+        );
         result = {
           status: HttpStatus.CREATED,
           message: 'token_create_success',
@@ -40,13 +44,13 @@ export class TokenController {
 
   @MessagePattern('token_destroy')
   public async destroyToken(data: {
-    userId: string;
+    customerId: string;
   }): Promise<ITokenDestroyResponse> {
     return {
-      status: data && data.userId ? HttpStatus.OK : HttpStatus.BAD_REQUEST,
+      status: data && data.customerId ? HttpStatus.OK : HttpStatus.BAD_REQUEST,
       message:
-        data && data.userId
-          ? this.tokenService.deleteTokenForUserId(data.userId) &&
+        data && data.customerId
+          ? this.tokenService.deleteTokenForCustomerId(data.customerId) &&
             'token_destroy_success'
           : 'token_destroy_bad_request',
       errors: null,
@@ -58,6 +62,7 @@ export class TokenController {
     token: string;
   }): Promise<ITokenDataResponse> {
     const tokenData = await this.tokenService.decodeToken(data.token);
+    console.log({ tokenData, data });
     return {
       status: tokenData ? HttpStatus.OK : HttpStatus.UNAUTHORIZED,
       message: tokenData ? 'token_decode_success' : 'token_decode_unauthorized',
