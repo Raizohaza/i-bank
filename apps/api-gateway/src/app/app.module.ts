@@ -1,4 +1,9 @@
-import { Module } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { ClientProxyFactory } from '@nestjs/microservices';
 import { ConfigService } from '../config/configuration';
@@ -8,6 +13,7 @@ import { AppService } from './app.service';
 import { CustomerController } from './customer.controller';
 import { AuthGuard } from './guards/authorization.guard';
 import { PermissionGuard } from './guards/permission.guard';
+import { LoggerMiddleware } from './middlewares/logger.middleware';
 
 @Module({
   imports: [ConfigService],
@@ -57,4 +63,10 @@ import { PermissionGuard } from './guards/permission.guard';
     },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(LoggerMiddleware)
+      .forRoutes({ path: '*', method: RequestMethod.ALL });
+  }
+}
