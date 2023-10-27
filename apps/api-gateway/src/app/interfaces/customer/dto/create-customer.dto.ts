@@ -11,4 +11,9 @@ export class CreateCustomerDto {
     example: 'test11',
   })
   password: string;
+  @ApiProperty({
+    minLength: 6,
+    example: 'username',
+  })
+  name: string;
 }

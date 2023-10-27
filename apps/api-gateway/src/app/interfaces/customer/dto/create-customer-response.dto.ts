@@ -9,6 +9,7 @@ export class CreateCustomerResponseDto extends BaseReponse {
         email: 'test@ibank.com',
         is_confirmed: false,
         id: '5d987c3bfb881ec86b476bcc',
+        name: 'Username',
       },
     },
     nullable: true,

@@ -13,6 +13,7 @@ export interface ICustomerSchema extends mongoose.Document {
   password: string;
   is_confirmed: boolean;
   type: string;
+  name: string;
   comparePassword: (password: string) => Promise<boolean>;
   getEncryptedPassword: (password: string) => Promise<string>;
 }
@@ -26,6 +27,10 @@ export const CustomerSchema = new mongoose.Schema<ICustomerSchema>(
         /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
         'Email should be valid',
       ],
+    },
+    name: {
+      type: String,
+      required: [true, 'Name can not be empty'],
     },
     is_confirmed: {
       type: Boolean,

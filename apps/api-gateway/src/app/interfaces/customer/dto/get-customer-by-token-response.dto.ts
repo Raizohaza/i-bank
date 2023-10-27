@@ -9,6 +9,7 @@ export class GetCustomerByTokenResponseDto extends BaseReponse {
         email: 'test@ibank.com',
         is_confirmed: true,
         id: '5d987c3bfb881ec86b476bcc',
+        name: 'username',
       },
     },
     nullable: true,
