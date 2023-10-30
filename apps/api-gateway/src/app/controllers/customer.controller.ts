@@ -19,12 +19,12 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { firstValueFrom } from 'rxjs';
-import { Authorization } from './decorators/authorization.decorator';
-import { IAuthorizedRequest } from './interfaces/common/authorized-request.interface';
+import { Authorization } from '../decorators/authorization.decorator';
+import { IAuthorizedRequest } from '../interfaces/common/authorized-request.interface';
 import {
   IServiveTokenCreateResponse,
   IServiceTokenDestroyResponse,
-} from './interfaces/token';
+} from '../interfaces/token';
 import {
   ConfirmCustomerDto,
   ConfirmCustomerResponseDto,
@@ -38,7 +38,7 @@ import {
   LoginCustomerDto,
   LoginCustomerResponseDto,
   LogoutCustomerResponseDto,
-} from './interfaces/customer';
+} from '../interfaces/customer';
 @ApiBearerAuth()
 @Controller('customer')
 @ApiTags('customers')

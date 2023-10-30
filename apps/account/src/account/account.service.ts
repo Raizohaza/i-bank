@@ -24,11 +24,15 @@ export class AccountService {
   async findByUser(userId: string) {
     return await this.accountModel.find({ customerId: userId });
   }
-  update(id: number, updateAccountDto: UpdateAccountDto) {
-    return `This action updates a #${id} account`;
+  async update(id: string, updateAccountDto: UpdateAccountDto) {
+    console.log(updateAccountDto);
+    return await this.accountModel.findOneAndUpdate(
+      { _id: updateAccountDto.id },
+      updateAccountDto
+    );
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} account`;
+  async remove(id: string) {
+    return await this.accountModel.deleteOne({ _id: id });
   }
 }

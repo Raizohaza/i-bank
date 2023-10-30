@@ -43,12 +43,17 @@ export class AccountController {
   }
 
   @MessagePattern('updateAccount')
-  update(@Payload() updateAccountDto: UpdateAccountDto) {
-    return this.accountService.update(updateAccountDto.id, updateAccountDto);
+  async update(@Payload() updateAccountDto: UpdateAccountDto) {
+    const result = await this.accountService.update(
+      updateAccountDto.id,
+      updateAccountDto
+    );
+    console.log(result);
+    return result;
   }
 
   @MessagePattern('removeAccount')
-  remove(@Payload() id: number) {
-    return this.accountService.remove(id);
+  async remove(@Payload() id: string) {
+    return await this.accountService.remove(id);
   }
 }
