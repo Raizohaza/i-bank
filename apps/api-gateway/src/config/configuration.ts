@@ -8,27 +8,23 @@ export class ConfigService {
     this.envConfig.customerService = {
       transport: Transport.TCP,
       options: {
-        host: '127.0.0.1',
         port: parseInt(process.env.PORT, 10) || 3001,
       },
     };
     this.envConfig.tokenService = {
       options: {
-        host: '127.0.0.1',
         port: parseInt(process.env.PORT, 10) || 3002,
       },
       transport: Transport.TCP,
     };
     this.envConfig.permissionService = {
       options: {
-        host: '127.0.0.1',
         port: parseInt(process.env.PORT, 10) || 3003,
       },
       transport: Transport.TCP,
     };
     this.envConfig.accountService = {
       options: {
-        host: '127.0.0.1',
         port: parseInt(process.env.PORT, 10) || 3005,
       },
       transport: Transport.TCP,
