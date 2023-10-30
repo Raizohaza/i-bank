@@ -13,15 +13,15 @@ import {
 import { ClientProxy } from '@nestjs/microservices';
 import { ApiTags, ApiBearerAuth, ApiOkResponse } from '@nestjs/swagger';
 import { firstValueFrom } from 'rxjs';
-import { Authorization } from '../decorators/authorization.decorator';
-import { CreateAccountReponseDto } from '../interfaces/account/dto/create-account-reponse.dto';
-import { CreateAccountDto } from '../interfaces/account/dto/create-account.dto';
-import { GetByUserIdResponse } from '../interfaces/account/dto/get-account-by-user-id.dto';
-import { UpdateAccountReponseDto } from '../interfaces/account/dto/update-account-reponse.dto';
-import { UpdateAccountDto } from '../interfaces/account/dto/update-account.dto';
-import { IServiceAccount } from '../interfaces/account/service-account.interface';
-import { IAuthorizedRequest } from '../interfaces/common/authorized-request.interface';
-import { BaseReponse } from '../interfaces/common/base-reponse.dto';
+import { Authorization } from '../../decorators/authorization.decorator';
+import { CreateAccountReponseDto } from './dto/create-account-reponse.dto';
+import { CreateAccountDto } from './dto/create-account.dto';
+import { GetByUserIdResponse } from './dto/get-account-by-user-id.dto';
+import { UpdateAccountReponseDto } from './dto/update-account-reponse.dto';
+import { UpdateAccountDto } from './dto/update-account.dto';
+import { IServiceAccount } from './service-account.interface';
+import { IAuthorizedRequest } from '../../interfaces/common/authorized-request.interface';
+import { BaseReponse } from '../../interfaces/common/base-reponse.dto';
 @ApiBearerAuth()
 @Controller('acount')
 @ApiTags('acounts')

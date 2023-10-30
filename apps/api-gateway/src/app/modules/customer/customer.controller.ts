@@ -19,26 +19,27 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { firstValueFrom } from 'rxjs';
-import { Authorization } from '../decorators/authorization.decorator';
-import { IAuthorizedRequest } from '../interfaces/common/authorized-request.interface';
+import { Authorization } from '../../decorators/authorization.decorator';
+import { IAuthorizedRequest } from '../../interfaces/common/authorized-request.interface';
 import {
   IServiveTokenCreateResponse,
   IServiceTokenDestroyResponse,
-} from '../interfaces/token';
+} from '../../interfaces/token';
 import {
   ConfirmCustomerDto,
   ConfirmCustomerResponseDto,
   CreateCustomerDto,
   CreateCustomerResponseDto,
   GetCustomerByTokenResponseDto,
-  IServiceCustomerConfirmResponse,
-  IServiceCustomerCreateResponse,
-  IServiceCustomerGetByIdResponse,
-  IServiceCustomerSearchResponse,
   LoginCustomerDto,
   LoginCustomerResponseDto,
   LogoutCustomerResponseDto,
-} from '../interfaces/customer';
+} from './dto';
+import { IServiceCustomerConfirmResponse } from './service-customer-confirm-response.interface';
+import { IServiceCustomerCreateResponse } from './service-customer-create-response.interface';
+import { IServiceCustomerGetByIdResponse } from './service-customer-get-by-id-response.interface';
+import { IServiceCustomerSearchResponse } from './service-customer-search-response.interface';
+
 @ApiBearerAuth()
 @Controller('customer')
 @ApiTags('customers')
