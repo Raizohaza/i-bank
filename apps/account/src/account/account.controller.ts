@@ -1,9 +1,10 @@
 import { Controller, Logger, HttpStatus } from '@nestjs/common';
+import { UsePipes } from '@nestjs/common/decorators/core/use-pipes.decorator';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { AccountService } from './account.service';
 import { UpdateAccountDto } from './dto/update-account.dto';
 import { IAccount } from './interfaces/account.interface';
-
+import { ParseObjectIdPipe } from '../pipes/ObjectId.pipe';
 @Controller()
 export class AccountController {
   private readonly logger: Logger = new Logger(AccountController.name);
@@ -38,7 +39,8 @@ export class AccountController {
     };
   }
   @MessagePattern('findOneAccount')
-  findOne(@Payload() id: number) {
+  @UsePipes(new ParseObjectIdPipe())
+  findOne(@Payload() id: string) {
     return this.accountService.findOne(id);
   }
 
@@ -48,7 +50,6 @@ export class AccountController {
       updateAccountDto.id,
       updateAccountDto
     );
-    console.log(result);
     return result;
   }
 

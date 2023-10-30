@@ -19,17 +19,20 @@ export class ReceiversController {
   }
 
   @MessagePattern('findOneReceiver')
-  findOne(@Payload() id: number) {
+  findOne(@Payload() id: string) {
     return this.receiversService.findOne(id);
   }
 
   @MessagePattern('updateReceiver')
   update(@Payload() updateReceiverDto: UpdateReceiverDto) {
-    return this.receiversService.update(updateReceiverDto.id, updateReceiverDto);
+    return this.receiversService.update(
+      updateReceiverDto.id,
+      updateReceiverDto
+    );
   }
 
   @MessagePattern('removeReceiver')
-  remove(@Payload() id: number) {
+  remove(@Payload() id: string) {
     return this.receiversService.remove(id);
   }
 }

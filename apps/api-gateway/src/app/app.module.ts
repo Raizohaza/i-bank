@@ -4,7 +4,7 @@ import {
   NestModule,
   RequestMethod,
 } from '@nestjs/common';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_FILTER } from '@nestjs/core';
 import { ClientProxyFactory } from '@nestjs/microservices';
 import { ConfigService } from '../config/configuration';
 import { AppController } from './app.controller';
@@ -14,13 +14,24 @@ import { AuthGuard } from './guards/authorization.guard';
 import { PermissionGuard } from './guards/permission.guard';
 import { LoggerMiddleware } from './middlewares/logger.middleware';
 import { CustomerController } from './modules/customer/customer.controller';
+import { ReceiverController } from './modules/receiver/receiver.controller';
+import { ExceptionFilter } from './exception-filters/rpc-exception.filter';
 
 @Module({
   imports: [ConfigService],
-  controllers: [AppController, CustomerController, AccountController],
+  controllers: [
+    AppController,
+    CustomerController,
+    AccountController,
+    ReceiverController,
+  ],
   providers: [
     AppService,
     ConfigService,
+    // {
+    //   provide: APP_FILTER,
+    //   useClass: ExceptionFilter,
+    // },
     {
       provide: 'CUSTOMER_SERVICE',
       useFactory: (configService: ConfigService) => {

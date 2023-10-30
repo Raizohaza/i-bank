@@ -14,12 +14,12 @@ export class AccountService {
     return await newAccount.save();
   }
 
-  findAll() {
-    return `This action returns all account`;
+  async findAll() {
+    return await this.accountModel.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} account`;
+  async findOne(id: string) {
+    return await this.accountModel.findById(id);
   }
   async findByUser(userId: string) {
     return await this.accountModel.find({ customerId: userId });

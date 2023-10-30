@@ -8,6 +8,7 @@ import {
   Delete,
   Inject,
   Req,
+  BadRequestException,
 } from '@nestjs/common';
 import { CreateReceiverDto } from './dto/create-receiver.dto';
 import { UpdateReceiverDto } from './dto/update-receiver.dto';
@@ -15,7 +16,10 @@ import { Authorization } from '../../decorators/authorization.decorator';
 import { ClientProxy } from '@nestjs/microservices';
 import { IAuthorizedRequest } from '../../interfaces/common/authorized-request.interface';
 import { firstValueFrom } from 'rxjs';
-
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import mongoose from 'mongoose';
+@ApiBearerAuth()
+@ApiTags('receiver')
 @Controller('receiver')
 export class ReceiverController {
   constructor(
@@ -25,6 +29,9 @@ export class ReceiverController {
   @Post()
   @Authorization(true)
   async create(@Body() createReceiverDto: CreateReceiverDto) {
+    if (!mongoose.isValidObjectId(createReceiverDto.accountId)) {
+      throw new BadRequestException('Account ID is not valid!');
+    }
     const result = await firstValueFrom(
       this.receiverService.send('createReceiver', createReceiverDto)
     );
