@@ -10,7 +10,7 @@ import { Transport, TcpOptions } from '@nestjs/microservices';
 import { TransactionModule } from './transaction/transaction.module';
 
 async function bootstrap() {
-  const port = new ConfigService().get('port') || 3006;
+  const port = new ConfigService().get('port') || 3007;
   const app = await NestFactory.createMicroservice(TransactionModule, {
     transport: Transport.TCP,
     options: {
