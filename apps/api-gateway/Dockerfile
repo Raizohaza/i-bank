@@ -9,7 +9,6 @@ COPY . .
 # test
 RUN npm install -g pnpm
 
-# RUN npx nx build api-gateway # co the do cai nx cho nay ko tuong thich
 RUN pnpm nx build api-gateway
 
 FROM i-bank:nx-base
