@@ -20,8 +20,47 @@ services:
       - 8000:4939
     environment:
       NODE_ENV: "development"
-      PORT: 8000
+      PORT: 4939
     networks:
       - corp
     restart: on-failure
 
+  customer:
+    container_name: customer
+    build:
+      context: ./
+      # cache_from:
+      #   - i-bank:nx-base
+      dockerfile: ./apps/customer/Dockerfile
+      args:
+        NODE_ENV: "development"
+        BUILD_FLAG: ""
+    image: customer:nx-base
+    ports:
+      - 3001:3001
+    environment:
+      NODE_ENV: "development"
+      PORT: 3001
+    networks:
+      - corp
+    restart: on-failure
+
+  token:
+    container_name: token
+    build:
+      context: ./
+      # cache_from:
+      #   - i-bank:nx-base
+      dockerfile: ./apps/token/Dockerfile
+      args:
+        NODE_ENV: "development"
+        BUILD_FLAG: ""
+    image: token:nx-base
+    ports:
+      - 3002:3002
+    environment:
+      NODE_ENV: "development"
+      PORT: 3002
+    networks:
+      - corp
+    restart: on-failure

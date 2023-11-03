@@ -18,5 +18,3 @@ COPY package.json ./
 
 RUN npm install
 
-# test
-RUN yarn nx build api-gateway
