@@ -67,9 +67,8 @@ export class CustomerController {
     return {
       message: customerResponse.message,
       data: {
-        customer: customerResponse.customer,
+        customer: customerResponse.data,
       },
-      errors: null,
     };
   }
 
@@ -89,7 +88,6 @@ export class CustomerController {
         {
           message: createCustomerResponse.message,
           data: null,
-          errors: createCustomerResponse.errors,
         },
         createCustomerResponse.status
       );
@@ -98,17 +96,16 @@ export class CustomerController {
     const createTokenResponse: IServiveTokenCreateResponse =
       await firstValueFrom(
         this.tokenServiceClient.send('token_create', {
-          customerId: createCustomerResponse.customer.id,
+          customerId: createCustomerResponse.data.id,
         })
       );
 
     return {
       message: createCustomerResponse.message,
       data: {
-        customer: createCustomerResponse.customer,
+        customer: createCustomerResponse.data,
         token: createTokenResponse.token,
       },
-      errors: null,
     };
   }
 
@@ -132,7 +129,6 @@ export class CustomerController {
         {
           message: getCustomerResponse.message,
           data: null,
-          errors: null,
         },
         HttpStatus.UNAUTHORIZED
       );
@@ -141,7 +137,7 @@ export class CustomerController {
     const createTokenResponse: IServiveTokenCreateResponse =
       await firstValueFrom(
         this.tokenServiceClient.send('token_create', {
-          customerId: getCustomerResponse.customer.id,
+          customerId: getCustomerResponse.data.id,
         })
       );
 
@@ -150,7 +146,6 @@ export class CustomerController {
       data: {
         token: createTokenResponse.token,
       },
-      errors: null,
     };
   }
 
@@ -176,7 +171,6 @@ export class CustomerController {
         {
           message: destroyTokenResponse.message,
           data: null,
-          errors: destroyTokenResponse.errors,
         },
         destroyTokenResponse.status
       );
@@ -184,7 +178,6 @@ export class CustomerController {
 
     return {
       message: destroyTokenResponse.message,
-      errors: null,
       data: null,
     };
   }
@@ -208,7 +201,6 @@ export class CustomerController {
         {
           message: confirmCustomerResponse.message,
           data: null,
-          errors: confirmCustomerResponse.errors,
         },
         confirmCustomerResponse.status
       );
@@ -216,7 +208,6 @@ export class CustomerController {
 
     return {
       message: confirmCustomerResponse.message,
-      errors: null,
       data: null,
     };
   }

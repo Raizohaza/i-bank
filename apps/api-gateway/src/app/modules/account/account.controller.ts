@@ -82,7 +82,6 @@ export class AccountController {
     const accountResponse: IServiceAccount = await firstValueFrom(
       this.accountService.send('updateAccount', body)
     );
-    console.log(accountResponse);
     return <UpdateAccountReponseDto>{
       message: accountResponse.message,
       data: accountResponse.data,

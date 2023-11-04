@@ -42,7 +42,6 @@ export class PermissionGuard implements CanActivate {
         {
           message: permissionInfo.message,
           data: null,
-          errors: null,
         },
         permissionInfo.status
       );

@@ -42,7 +42,6 @@ export class AuthGuard implements CanActivate {
         {
           message: customerTokenInfo.message,
           data: null,
-          errors: null,
         },
         customerTokenInfo.status
       );
@@ -55,7 +54,7 @@ export class AuthGuard implements CanActivate {
       )
     );
 
-    request.customer = customerInfo.customer;
+    request.customer = customerInfo.data;
     return true;
   }
 }
