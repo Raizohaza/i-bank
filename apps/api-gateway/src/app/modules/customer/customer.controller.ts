@@ -18,7 +18,7 @@ import {
   ApiTags,
   ApiBearerAuth,
 } from '@nestjs/swagger';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, lastValueFrom } from 'rxjs';
 import { Authorization } from '../../decorators/authorization.decorator';
 import { IAuthorizedRequest } from '../../interfaces/common/authorized-request.interface';
 import {
@@ -56,14 +56,15 @@ export class CustomerController {
     type: findAllCustomerResponseDTO,
   })
   public async findAll(): Promise<findAllCustomerResponseDTO> {
-    const customerResponse = await firstValueFrom(
+    const customerResponse = await lastValueFrom(
       this.customerService.send('findAllCustomer', {})
     );
+    console.log(customerResponse);
 
     return {
       message: customerResponse.message,
       data: {
-        customer: customerResponse.data,
+        customer: customerResponse,
       },
     };
   }

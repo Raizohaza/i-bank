@@ -20,5 +20,5 @@ export class CreateAccountDto {
     minLength: 10,
     example: '1671552887',
   })
-  accountNumber?: string;
+  accountNumber = new Date().getTime().toString().slice(0, 10);
 }

@@ -17,6 +17,7 @@ import {
   BasicAuthorization,
 } from '../../decorators/authorization.decorator';
 import { lastValueFrom } from 'rxjs';
+import { createKey, decrypt, encrypt } from '../../utils/rsa.encrypt';
 
 @ApiBasicAuth()
 @ApiTags('linking-banks')
@@ -46,10 +47,23 @@ export class LinkingBanksController {
   // }
 
   @Get('account/:accountNum')
-  @BasicAuthorization(true)
+  // @BasicAuthorization(true)
   findOne(@Param('accountNum') accountNum: string) {
     return lastValueFrom(
       this.linkingBanksService.send('remoteFindByAccountNumber', accountNum)
     );
+  }
+  @Get('rsa/generateKey')
+  generateKey() {
+    createKey();
+  }
+
+  @Get('rsa/encrypt')
+  encrypt() {
+    return encrypt({ message: 'hi mom' });
+  }
+  @Post('rsa/decrypt')
+  decrypt(@Body() body: { message: string }) {
+    return decrypt(body.message);
   }
 }

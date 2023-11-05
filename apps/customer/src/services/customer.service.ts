@@ -19,7 +19,7 @@ export class CustomerService {
     return this.customerModel.find(params).exec();
   }
   async findAllCustomer() {
-    this.customerModel.find();
+    return await this.customerModel.find();
   }
   public async searchCustomerById(id: string): Promise<ICustomer> {
     return this.customerModel.findById(id).exec();

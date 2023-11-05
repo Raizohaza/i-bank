@@ -190,6 +190,6 @@ export class CustomerController {
   }
   @MessagePattern('findAllCustomer')
   public async findAllCustomer() {
-    return this.customerService.findAllCustomer();
+    return await this.customerService.findAllCustomer();
   }
 }
