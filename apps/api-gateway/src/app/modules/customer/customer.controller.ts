@@ -35,6 +35,7 @@ import {
   LoginCustomerResponseDto,
   LogoutCustomerResponseDto,
 } from './dto';
+import { findAllCustomerResponseDTO } from './dto/find-all-customer-response.dto';
 import { IServiceCustomerConfirmResponse } from './service-customer-confirm-response.interface';
 import { IServiceCustomerCreateResponse } from './service-customer-create-response.interface';
 import { IServiceCustomerGetByIdResponse } from './service-customer-get-by-id-response.interface';
@@ -49,6 +50,23 @@ export class CustomerController {
     @Inject('CUSTOMER_SERVICE') private readonly customerService: ClientProxy,
     @Inject('TOKEN_SERVICE') private readonly tokenServiceClient: ClientProxy
   ) {}
+
+  @Get('findAll')
+  @ApiOkResponse({
+    type: findAllCustomerResponseDTO,
+  })
+  public async findAll(): Promise<findAllCustomerResponseDTO> {
+    const customerResponse = await firstValueFrom(
+      this.customerService.send('findAllCustomer', {})
+    );
+
+    return {
+      message: customerResponse.message,
+      data: {
+        customer: customerResponse.data,
+      },
+    };
+  }
   @Get()
   @Authorization(true)
   @ApiOkResponse({

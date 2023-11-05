@@ -4,9 +4,9 @@ export interface ITransactonSchema extends mongoose.Document {
   //basic info
   customerId: ObjectId;
   fromAccount: ObjectId;
-  fromName: string;
+  fromName?: string;
   toAccount: ObjectId;
-  toName: string;
+  toName?: string;
   tellerEmpployeeId: string;
   //details
   amount: number;

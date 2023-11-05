@@ -7,7 +7,8 @@ function transformValue(doc, ret: { [key: string]: unknown }) {
 export interface IAccountSchema extends mongoose.Document {
   customerId: ObjectId;
   type: string;
-  balance: number
+  balance: number;
+  accountNumber: string;
 }
 
 export class Account {}
@@ -22,6 +23,7 @@ export const AccountSchema = new mongoose.Schema<IAccountSchema>(
       type: String,
       enum: ['PAYROLL', 'SAVING'],
     },
+    accountNumber: { type: String, required: true },
     balance: Number,
   },
   {

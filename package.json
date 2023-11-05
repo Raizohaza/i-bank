@@ -7,6 +7,8 @@
     "start": "nx serve",
     "start2": "node ./dist/apps/api-gateway/main.js 6789",
     "start3": "nx build && node ./dist/apps/api-gateway/main.js 6969",
+    "start-services": "nx run-many --target=serve --projects=token,customer,account,receivers,transaction",
+    "start-gateway": "nx serve api-gateway",
     "build": "nx build",
     "test": "nx test"
   },

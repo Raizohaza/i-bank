@@ -25,7 +25,11 @@ export class AuthGuard implements CanActivate {
       context.getHandler()
     );
 
-    if (!secured) {
+    const basicSecured = this.reflector.get<string[]>(
+      'basicSecured',
+      context.getHandler()
+    );
+    if (!secured && !basicSecured) {
       return true;
     }
 

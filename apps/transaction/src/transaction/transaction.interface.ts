@@ -1,9 +1,9 @@
 export interface ITransaction {
   customerId: string;
   fromAccount: string;
-  fromName: string;
+  fromName?: string;
   toAccount: string;
-  toName: string;
+  toName?: string;
   tellerEmpployeeId?: string;
   amount: number;
   type: string;

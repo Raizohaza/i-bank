@@ -188,4 +188,8 @@ export class CustomerController {
 
     return result;
   }
+  @MessagePattern('findAllCustomer')
+  public async findAllCustomer() {
+    return this.customerService.findAllCustomer();
+  }
 }

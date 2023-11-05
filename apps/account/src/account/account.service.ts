@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { CreateAccountDto } from './dto/create-account.dto';
 import { UpdateAccountDto } from './dto/update-account.dto';
 import { IAccount } from './interfaces/account.interface';
 
@@ -9,7 +10,7 @@ export class AccountService {
   constructor(
     @InjectModel('Account') private readonly accountModel: Model<IAccount>
   ) {}
-  async create(createAccountDto: IAccount) {
+  async create(createAccountDto: CreateAccountDto) {
     const newAccount = new this.accountModel(createAccountDto);
     return await newAccount.save();
   }
@@ -18,6 +19,15 @@ export class AccountService {
     return await this.accountModel.find();
   }
 
+  async remoteFindById(id: string) {
+    return await this.accountModel.findById(id).select('_id balance');
+  }
+
+  async remoteFindByAccountNumber(accountNum: string) {
+    return await this.accountModel
+      .findOne({ accountNumber: accountNum })
+      .select('_id accountNumber');
+  }
   async findOne(id: string) {
     return await this.accountModel.findById(id);
   }

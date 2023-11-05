@@ -1,9 +1,9 @@
 export class CreateTransactionDto {
   customerId: string;
   fromAccount: string;
-  fromName: string;
+  fromName?: string;
   toAccount: string;
-  toName: string;
+  toName?: string;
   tellerEmpployeeId: string;
   //details
   amount: number;

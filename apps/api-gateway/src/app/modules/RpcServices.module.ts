@@ -5,6 +5,7 @@ import { ReceiverController } from './receiver/receiver.controller';
 import { CustomerController } from './customer/customer.controller';
 import { AccountController } from './account/account.controller';
 import { TransactionController } from './transaction/transaction.controller';
+import { LinkingBanksController } from './linking-banks/linking-banks.controller';
 @Module({
   imports: [ConfigService],
   controllers: [
@@ -12,6 +13,7 @@ import { TransactionController } from './transaction/transaction.controller';
     CustomerController,
     AccountController,
     TransactionController,
+    LinkingBanksController,
   ],
   providers: [
     ConfigService,
@@ -50,6 +52,15 @@ import { TransactionController } from './transaction/transaction.controller';
       useFactory: (configService: ConfigService) => {
         return ClientProxyFactory.create(
           configService.get('transactionService')
+        );
+      },
+      inject: [ConfigService],
+    },
+    {
+      provide: 'LINKING_BANKS_SERVICE',
+      useFactory: (configService: ConfigService) => {
+        return ClientProxyFactory.create(
+          configService.get('linkingBankService')
         );
       },
       inject: [ConfigService],

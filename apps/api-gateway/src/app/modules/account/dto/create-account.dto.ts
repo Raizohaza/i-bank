@@ -16,4 +16,9 @@ export class CreateAccountDto {
     example: '50000',
   })
   balance: number;
+  @ApiProperty({
+    minLength: 10,
+    example: '1671552887',
+  })
+  accountNumber?: string;
 }

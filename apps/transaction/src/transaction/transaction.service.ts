@@ -18,13 +18,14 @@ export class TransactionService {
     return `This action returns all transaction`;
   }
   async findAllByCustomerId(id) {
-    console.log(id);
     const data = await this.model.find({ customerId: id }).lean();
     console.log(data);
     return data;
   }
-  findOne(id: string) {
-    return `This action returns a #${id} transaction`;
+  async findOne(id: string) {
+    const data = await this.model.find({ _id: id }).lean();
+    console.log(data);
+    return data;
   }
 
   update(id: string, updateTransactionDto: UpdateTransactionDto) {

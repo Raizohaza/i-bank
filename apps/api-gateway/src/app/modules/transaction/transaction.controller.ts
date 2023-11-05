@@ -16,7 +16,6 @@ import { firstValueFrom, lastValueFrom } from 'rxjs';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Authorization } from '../../decorators/authorization.decorator';
 import { IAuthorizedRequest } from '../../interfaces/common/authorized-request.interface';
-import { GetByUserIdResponse } from '../account/dto/get-account-by-user-id.dto';
 import { IServiceAccount } from '../account/service-account.interface';
 import { BaseReponse } from '../../interfaces/common/base-reponse.dto';
 import { HttpStatus } from '@nestjs/common/enums';
