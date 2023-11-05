@@ -5,7 +5,7 @@ export class BaseReponse {
   @ApiProperty({ example: HttpStatus.OK })
   status? = HttpStatus.OK;
   @ApiProperty({ example: 'success' })
-  message: string;
+  message = 'success';
   @ApiProperty()
   data: any;
 }

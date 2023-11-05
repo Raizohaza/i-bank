@@ -11,7 +11,7 @@ export interface ITransactonSchema extends mongoose.Document {
   //details
   amount: number;
   type: string;
-  transTime: Date;
+  // transTime: Date;
   fee: number;
   contentTransaction: string;
   registerDay: Date;
@@ -23,7 +23,7 @@ export const TransactionSchema = new mongoose.Schema<ITransactonSchema>(
   {
     amount: Number,
     type: String,
-    transTime: Date,
+    // transTime: Date,
     tellerEmpployeeId: String,
     customerId: mongoose.Schema.Types.ObjectId,
     fromAccount: mongoose.Schema.Types.ObjectId,

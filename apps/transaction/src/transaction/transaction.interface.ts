@@ -7,10 +7,10 @@ export interface ITransaction {
   tellerEmpployeeId?: string;
   amount: number;
   type: string;
-  transTime?: Date;
+  // transTime?: Date;
   fee?: number;
   contentTransaction: string;
-  registerDay?: Date;
+  // registerDay?: Date;
   OTPToken?: string;
   OTPVerify?: boolean;
 }

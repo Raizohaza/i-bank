@@ -8,7 +8,7 @@ export class CreateTransactionDto {
   //details
   amount: number;
   type: string;
-  transTime: Date;
+  // transTime: Date;
   fee: number;
   contentTransaction: string;
   registerDay: Date;
