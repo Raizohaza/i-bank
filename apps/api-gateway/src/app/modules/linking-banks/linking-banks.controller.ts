@@ -11,15 +11,15 @@ import { CreateLinkingBankDto } from './dto/create-linking-bank.dto';
 import { UpdateLinkingBankDto } from './dto/update-linking-bank.dto';
 import { Inject } from '@nestjs/common/decorators';
 import { ClientProxy } from '@nestjs/microservices';
-import { ApiBasicAuth, ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBasicAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
 import {
   Authorization,
   BasicAuthorization,
 } from '../../decorators/authorization.decorator';
 import { lastValueFrom } from 'rxjs';
 import { createKey, decrypt, encrypt } from '../../utils/rsa.encrypt';
-
-@ApiBasicAuth()
+@ApiHeader({ name: 'x-api-key' })
+@ApiHeader({ name: 'x-time' })
 @ApiTags('linking-banks')
 @Controller('linking-banks')
 export class LinkingBanksController {
@@ -47,7 +47,7 @@ export class LinkingBanksController {
   // }
 
   @Get('account/:accountNum')
-  // @BasicAuthorization(true)
+  @BasicAuthorization(true)
   findOne(@Param('accountNum') accountNum: string) {
     return lastValueFrom(
       this.linkingBanksService.send('remoteFindByAccountNumber', accountNum)

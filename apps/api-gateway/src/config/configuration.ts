@@ -5,6 +5,8 @@ export class ConfigService {
   constructor() {
     this.envConfig = {};
     this.envConfig.port = parseInt(process.env.PORT, 10) || 3000;
+    this.envConfig['x-secret'] = process.env['x-secret'] || 'abc';
+    console.log(process.env['x-secret']);
     this.envConfig.customerService = {
       transport: Transport.TCP,
       options: {
