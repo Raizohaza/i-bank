@@ -18,6 +18,10 @@ import { LinkingBanksController } from './linking-banks/linking-banks.controller
   providers: [
     ConfigService,
     {
+      provide: 'CONFIG_SERVICE',
+      useClass: ConfigService,
+    },
+    {
       provide: 'CUSTOMER_SERVICE',
       useFactory: (configService: ConfigService) => {
         const customerServiceOptions = configService.get('customerService');

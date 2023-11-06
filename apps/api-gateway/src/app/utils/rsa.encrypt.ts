@@ -63,3 +63,7 @@ export function decrypt(encryptedData: string) {
   console.log(decryptedData.toString('utf-8'));
   return decryptedData.toString('utf-8');
 }
+
+export function hash(secret: string) {
+  return crypto.createHash('sha256').update(secret).digest('hex');
+}

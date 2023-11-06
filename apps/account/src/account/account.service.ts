@@ -24,9 +24,32 @@ export class AccountService {
   }
 
   async remoteFindByAccountNumber(accountNum: string) {
-    return await this.accountModel
-      .findOne({ accountNumber: accountNum })
-      .select('_id accountNumber');
+    const data = await this.accountModel.aggregate([
+      { $match: { accountNumber: accountNum } },
+      {
+        $lookup: {
+          from: 'customers',
+          localField: 'customerId',
+          foreignField: '_id',
+          as: 'customers',
+        },
+      },
+      {
+        $unwind: {
+          path: '$customers',
+          preserveNullAndEmptyArrays: false,
+        },
+      },
+      {
+        $project: {
+          email: '$customers.email',
+          name: '$customers.name',
+          accountNumber: 1,
+        },
+      },
+    ]);
+
+    return data;
   }
   async findOne(id: string) {
     return await this.accountModel.findById(id);
