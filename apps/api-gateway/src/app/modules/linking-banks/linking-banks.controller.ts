@@ -1,6 +1,13 @@
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  StreamableFile,
+} from '@nestjs/common';
 import { CreateLinkingBankDto } from './dto/create-linking-bank.dto';
-import { Inject } from '@nestjs/common/decorators';
+import { Header, Inject } from '@nestjs/common/decorators';
 import { ClientProxy } from '@nestjs/microservices';
 import { ApiHeader, ApiTags } from '@nestjs/swagger';
 import {
@@ -11,8 +18,9 @@ import { lastValueFrom } from 'rxjs';
 import { createKey, decrypt, encrypt, hash } from '../../utils/rsa.encrypt';
 import fetch from 'node-fetch';
 import { ConfigService } from '@nestjs/config';
-@ApiHeader({ name: 'x-api-key' })
-@ApiHeader({ name: 'x-time' })
+import { createReadStream } from 'fs';
+import { join } from 'path';
+
 @ApiTags('linking-banks')
 @Controller('linking-banks')
 export class LinkingBanksController {
@@ -50,6 +58,8 @@ export class LinkingBanksController {
   }
 
   @Get('external/account/:accountNum')
+  @ApiHeader({ name: 'x-api-key' })
+  @ApiHeader({ name: 'x-time' })
   // @BasicAuthorization(true)
   findOneExternal(@Param('accountNum') accountNum: string) {
     const HOME = 'https://abine.fly.dev';
@@ -84,5 +94,16 @@ export class LinkingBanksController {
   @Post('rsa/decrypt')
   decrypt(@Body() body: { message: string }) {
     return decrypt(body.message);
+  }
+
+  @Get('public.pem')
+  @ApiHeader({ name: 'x-api-key' })
+  @ApiHeader({ name: 'x-time' })
+  @Header('Content-Type', 'application/x-pem-file')
+  @Header('Content-Disposition', 'attachment; filename="public.pem"')
+  // @BasicAuthorization(true)
+  getPublicKey() {
+    const file = createReadStream(join(process.cwd(), 'public.pem'));
+    return new StreamableFile(file);
   }
 }

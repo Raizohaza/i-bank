@@ -1,4 +1,3 @@
-
 import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
@@ -6,7 +5,7 @@ import { Transport, TcpOptions } from '@nestjs/microservices';
 import { EmployeeModule } from './employee/employee.module';
 
 async function bootstrap() {
-  const port = new ConfigService().get('port') || 3005;
+  const port = new ConfigService().get('port') || 4001;
   const app = await NestFactory.createMicroservice(EmployeeModule, {
     transport: Transport.TCP,
     options: {
