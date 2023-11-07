@@ -11,6 +11,10 @@ import { Reflector } from '@nestjs/core';
 import { ClientProxy } from '@nestjs/microservices';
 import * as crypto from 'crypto';
 import { ConfigService } from '../../config/configuration';
+import {
+  BadRequestException,
+  UnauthorizedException,
+} from '@nestjs/common/exceptions';
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
@@ -41,25 +45,28 @@ export class AuthGuard implements CanActivate {
       const token = request?.headers?.['x-api-key'];
       const time: string = request?.headers?.['x-time'];
       const url: Request = context.switchToHttp().getRequest().url;
-      const date = new Date(eval(time));
+      const date = new Date(Number.parseInt(time));
       const secret = this.config.get('x-secret');
       const now: number = Date.now();
       const expiratedTime = 60000 * 200; //200 min
       if (now - date.getTime() > expiratedTime) {
-        throw new HttpException('Expirated time!', HttpStatus.UNAUTHORIZED);
+        throw new UnauthorizedException('Expirated time!');
       }
       const hash = (secret: string) =>
         crypto.createHash('sha256').update(secret).digest('hex');
       const hashToken = hash(url + time + secret);
-      console.log({
-        token,
-        hashToken,
-        time,
-        url,
-        secret,
-        date,
-      });
-      return token === hashToken;
+      // console.log({
+      //   token,
+      //   hashToken,
+      //   time,
+      //   url,
+      //   secret,
+      //   date,
+      // });
+      if (token !== hashToken) {
+        throw new BadRequestException('Invalid Token');
+      }
+      return true;
     }
     const token = request?.headers?.authorization?.split(' ')?.[1];
     if (!token) {

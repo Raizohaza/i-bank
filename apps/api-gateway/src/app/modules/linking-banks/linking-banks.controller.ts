@@ -50,6 +50,8 @@ export class LinkingBanksController {
   // }
 
   @Get('account/:accountNum')
+  @ApiHeader({ name: 'x-api-key' })
+  @ApiHeader({ name: 'x-time' })
   @BasicAuthorization(true)
   findOne(@Param('accountNum') accountNum: string) {
     return lastValueFrom(
@@ -58,8 +60,6 @@ export class LinkingBanksController {
   }
 
   @Get('external/account/:accountNum')
-  @ApiHeader({ name: 'x-api-key' })
-  @ApiHeader({ name: 'x-time' })
   // @BasicAuthorization(true)
   findOneExternal(@Param('accountNum') accountNum: string) {
     const HOME = 'https://abine.fly.dev';
