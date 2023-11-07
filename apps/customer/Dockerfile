@@ -1,20 +1,15 @@
-
-FROM i-bank:nx-base AS builder
+FROM my-base-image:nx-base AS builder
 
 ARG NODE_ENV
 ARG BUILD_FLAG
-WORKDIR /home/node
+WORKDIR /app/builder
 COPY . .
+RUN npx nx build customer ${BUILD_FLAG}
 
-# test
-RUN npm install -g pnpm
+FROM my-base-image:nx-base
 
-RUN pnpm nx build customer
-
-FROM i-bank:nx-base
-
-WORKDIR /home
-COPY --from=builder /home/node ./
+WORKDIR /app
+COPY --from=builder /app/builder ./
 ENV NODE_ENV=$NODE_ENV
 
 CMD ["node", "./dist/apps/customer/main.js"]

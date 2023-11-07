@@ -1,20 +1,17 @@
-FROM node:14-bullseye as builder
-
-RUN apt-get update
-RUN apt install cmake -y
-
-# For some reason, the following line is needed to install the node
-RUN git clone https://github.com/mongodb/libmongocrypt
-WORKDIR /libmongocrypt/cmake-build
-RUN cmake ../
-RUN make
-RUN make install
-
-ENV NODE_ENV build
-
-WORKDIR /home/node
-
-COPY package.json ./
-
-RUN npm install
-
+# FROM node:lts-alpine
+# ENV NODE_ENV=production
+# WORKDIR /usr/src/app
+# COPY ["package.json", "package-lock.json*", "npm-shrinkwrap.json*", "./"]
+# RUN npm install --production --silent && mv node_modules ../
+# COPY . .
+# EXPOSE 5000
+# RUN chown -R node /usr/src/app
+# USER node
+# CMD ["npm", "start"]
+FROM bitnami/node:latest as builder
+ARG NODE_ENV
+ARG BUILD_FLAG
+WORKDIR /app/builder
+COPY . .
+# RUN apk add python3 make gcc g++
+RUN npm ci --omit-dev

@@ -1,20 +1,16 @@
-
-FROM i-bank:nx-base AS builder
+FROM my-base-image:nx-base AS builder
 
 ARG NODE_ENV
 ARG BUILD_FLAG
-WORKDIR /home/node
+WORKDIR /app/builder
 COPY . .
+RUN npx nx build api-gateway ${BUILD_FLAG}
 
-# test
-RUN npm install -g pnpm
+FROM my-base-image:nx-base
 
-RUN pnpm nx build api-gateway
+WORKDIR /app
+COPY --from=builder /app/builder ./
 
-FROM i-bank:nx-base
-
-WORKDIR /home
-COPY --from=builder /home/node ./
 ENV NODE_ENV=$NODE_ENV
 
 CMD ["node", "./dist/apps/api-gateway/main.js"]
