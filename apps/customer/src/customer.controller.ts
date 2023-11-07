@@ -31,27 +31,27 @@ export class CustomerController {
           result = {
             status: HttpStatus.OK,
             message: 'customer_search_by_credentials_success',
-            customer: customer[0],
+            data: customer[0],
           };
         } else {
           result = {
             status: HttpStatus.NOT_FOUND,
             message: 'customer_search_by_credentials_not_match',
-            customer: null,
+            data: null,
           };
         }
       } else {
         result = {
           status: HttpStatus.NOT_FOUND,
           message: 'customer_search_by_credentials_not_found',
-          customer: null,
+          data: null,
         };
       }
     } else {
       result = {
         status: HttpStatus.NOT_FOUND,
         message: 'customer_search_by_credentials_not_found',
-        customer: null,
+        data: null,
       };
     }
 
@@ -68,20 +68,20 @@ export class CustomerController {
         result = {
           status: HttpStatus.OK,
           message: 'customer_get_by_id_success',
-          customer,
+          data: customer,
         };
       } else {
         result = {
           status: HttpStatus.NOT_FOUND,
           message: 'customer_get_by_id_not_found',
-          customer: null,
+          data: null,
         };
       }
     } else {
       result = {
         status: HttpStatus.BAD_REQUEST,
         message: 'customer_get_by_id_bad_request',
-        customer: null,
+        data: null,
       };
     }
 
@@ -110,20 +110,17 @@ export class CustomerController {
         result = {
           status: HttpStatus.OK,
           message: 'customer_confirm_success',
-          errors: null,
         };
       } else {
         result = {
           status: HttpStatus.NOT_FOUND,
           message: 'customer_confirm_not_found',
-          errors: null,
         };
       }
     } else {
       result = {
         status: HttpStatus.BAD_REQUEST,
         message: 'customer_confirm_bad_request',
-        errors: null,
       };
     }
 
@@ -144,14 +141,8 @@ export class CustomerController {
       if (customersWithEmail && customersWithEmail.length > 0) {
         result = {
           status: HttpStatus.CONFLICT,
-          message: 'customer_create_conflict',
-          customer: null,
-          errors: {
-            email: {
-              message: 'Email already exists',
-              path: 'email',
-            },
-          },
+          message: 'Email already exists',
+          data: null,
         };
       } else {
         try {
@@ -166,8 +157,7 @@ export class CustomerController {
           result = {
             status: HttpStatus.CREATED,
             message: 'customer_create_success',
-            customer: createdCustomer,
-            errors: null,
+            data: createdCustomer,
           };
           this.mailerServiceClient.send('mail_send', {
             to: createdCustomer.email,
@@ -183,9 +173,8 @@ export class CustomerController {
         } catch (e) {
           result = {
             status: HttpStatus.PRECONDITION_FAILED,
-            message: 'customer_create_precondition_failed',
-            customer: null,
-            errors: e.errors,
+            message: e.errors,
+            data: null,
           };
         }
       }
@@ -193,11 +182,14 @@ export class CustomerController {
       result = {
         status: HttpStatus.BAD_REQUEST,
         message: 'customer_create_bad_request',
-        customer: null,
-        errors: null,
+        data: null,
       };
     }
 
     return result;
+  }
+  @MessagePattern('findAllCustomer')
+  public async findAllCustomer() {
+    return await this.customerService.findAllCustomer();
   }
 }

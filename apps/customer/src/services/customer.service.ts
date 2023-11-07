@@ -18,7 +18,9 @@ export class CustomerService {
   public async searchCustomer(params: { email: string }): Promise<ICustomer[]> {
     return this.customerModel.find(params).exec();
   }
-
+  async findAllCustomer() {
+    return await this.customerModel.find();
+  }
   public async searchCustomerById(id: string): Promise<ICustomer> {
     return this.customerModel.findById(id).exec();
   }

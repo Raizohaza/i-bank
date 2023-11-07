@@ -9,14 +9,20 @@ import {
 import { firstValueFrom } from 'rxjs';
 import { Reflector } from '@nestjs/core';
 import { ClientProxy } from '@nestjs/microservices';
-
+import * as crypto from 'crypto';
+import { ConfigService } from '../../config/configuration';
+import {
+  BadRequestException,
+  UnauthorizedException,
+} from '@nestjs/common/exceptions';
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
     @Inject('TOKEN_SERVICE') private readonly tokenServiceClient: ClientProxy,
     @Inject('CUSTOMER_SERVICE')
-    private readonly customerServiceClient: ClientProxy
+    private readonly customerServiceClient: ClientProxy,
+    private config: ConfigService
   ) {}
 
   public async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -25,11 +31,43 @@ export class AuthGuard implements CanActivate {
       context.getHandler()
     );
 
-    if (!secured) {
+    const basicSecured = this.reflector.get<string[]>(
+      'basicSecured',
+      context.getHandler()
+    );
+    if (!secured && !basicSecured) {
       return true;
     }
 
     const request = context.switchToHttp().getRequest();
+
+    if (basicSecured) {
+      const token = request?.headers?.['x-api-key'];
+      const time: string = request?.headers?.['x-time'];
+      const url: Request = context.switchToHttp().getRequest().url;
+      const date = new Date(Number.parseInt(time));
+      const secret = this.config.get('x-secret');
+      const now: number = Date.now();
+      const expiratedTime = 60000 * 200; //200 min
+      if (now - date.getTime() > expiratedTime) {
+        throw new UnauthorizedException('Expirated time!');
+      }
+      const hash = (secret: string) =>
+        crypto.createHash('sha256').update(secret).digest('hex');
+      const hashToken = hash(url + time + secret);
+      // console.log({
+      //   token,
+      //   hashToken,
+      //   time,
+      //   url,
+      //   secret,
+      //   date,
+      // });
+      if (token !== hashToken) {
+        throw new BadRequestException('Invalid Token');
+      }
+      return true;
+    }
     const token = request?.headers?.authorization?.split(' ')?.[1];
     if (!token) {
       throw new HttpException('Invalid Token', HttpStatus.BAD_REQUEST);
@@ -42,7 +80,6 @@ export class AuthGuard implements CanActivate {
         {
           message: customerTokenInfo.message,
           data: null,
-          errors: null,
         },
         customerTokenInfo.status
       );
@@ -55,7 +92,7 @@ export class AuthGuard implements CanActivate {
       )
     );
 
-    request.customer = customerInfo.customer;
+    request.customer = customerInfo.data;
     return true;
   }
 }

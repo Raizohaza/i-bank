@@ -7,17 +7,16 @@ import {
 import { APP_GUARD } from '@nestjs/core';
 import { ClientProxyFactory } from '@nestjs/microservices';
 import { ConfigService } from '../config/configuration';
-import { AccountController } from './account.controller';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { CustomerController } from './customer.controller';
 import { AuthGuard } from './guards/authorization.guard';
 import { PermissionGuard } from './guards/permission.guard';
 import { LoggerMiddleware } from './middlewares/logger.middleware';
+import { RpcServicesModule } from './modules/RpcServices.module';
 
 @Module({
-  imports: [ConfigService],
-  controllers: [AppController, CustomerController, AccountController],
+  imports: [ConfigService, RpcServicesModule],
+  controllers: [AppController],
   providers: [
     AppService,
     ConfigService,
@@ -43,13 +42,6 @@ import { LoggerMiddleware } from './middlewares/logger.middleware';
         return ClientProxyFactory.create(
           configService.get('permissionService')
         );
-      },
-      inject: [ConfigService],
-    },
-    {
-      provide: 'ACCOUNT_SERVICE',
-      useFactory: (configService: ConfigService) => {
-        return ClientProxyFactory.create(configService.get('accountService'));
       },
       inject: [ConfigService],
     },

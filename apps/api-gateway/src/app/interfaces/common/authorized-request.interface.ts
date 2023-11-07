@@ -1,4 +1,4 @@
-import { ICustomer } from '../customer/customer.interface';
+import { ICustomer } from '../../modules/customer';
 
 export interface IAuthorizedRequest extends Request {
   customer?: ICustomer;

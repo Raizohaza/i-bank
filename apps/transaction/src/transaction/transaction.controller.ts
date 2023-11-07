@@ -18,18 +18,26 @@ export class TransactionController {
     return this.transactionService.findAll();
   }
 
+  @MessagePattern('findAllTransactionByCustomerId')
+  findAllByCustomerId(@Payload() id: string) {
+    return this.transactionService.findAllByCustomerId(id);
+  }
+
   @MessagePattern('findOneTransaction')
-  findOne(@Payload() id: number) {
+  findOne(@Payload() id: string) {
     return this.transactionService.findOne(id);
   }
 
   @MessagePattern('updateTransaction')
   update(@Payload() updateTransactionDto: UpdateTransactionDto) {
-    return this.transactionService.update(updateTransactionDto.id, updateTransactionDto);
+    return this.transactionService.update(
+      updateTransactionDto.id,
+      updateTransactionDto
+    );
   }
 
   @MessagePattern('removeTransaction')
-  remove(@Payload() id: number) {
+  remove(@Payload() id: string) {
     return this.transactionService.remove(id);
   }
 }

@@ -1,4 +1,5 @@
-version: '3.4'
+version: "3.8"
+
 
 networks:
   corp:
@@ -24,19 +25,11 @@ services:
     networks:
       - corp
     restart: on-failure
-  # ibank:
-  #   image: ibank
-  #   build:
-  #     context: .
-  #     dockerfile: ./Dockerfile
-  #   environment:
-  #     NODE_ENV: production
-  #   ports:
-  #     - 5000:5000
   customer:
     container_name: customer
     build:
       context: ./
+
       cache_from:
         - my-base-image:nx-base
       dockerfile: ./apps/customer/Dockerfile
@@ -48,10 +41,12 @@ services:
       - 3001:3001
     environment:
       NODE_ENV: 'development'
+
       PORT: 3001
     networks:
       - corp
     restart: on-failure
+
   api-gateway:
     container_name: api-gateway
     build:
@@ -68,6 +63,7 @@ services:
     environment:
       NODE_ENV: 'development'
       PORT: 3000
+
     networks:
       - corp
     restart: on-failure

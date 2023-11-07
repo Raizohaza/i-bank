@@ -20,7 +20,6 @@ export class PermissionController {
       result = {
         status: HttpStatus.BAD_REQUEST,
         message: 'permission_check_bad_request',
-        errors: null,
       };
     } else {
       const allowedPermissions = this.confirmedStrategy.getAllowedPermissions(
@@ -36,7 +35,6 @@ export class PermissionController {
         message: isAllowed
           ? 'permission_check_success'
           : 'permission_check_forbidden',
-        errors: null,
       };
     }
 

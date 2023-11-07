@@ -53,7 +53,6 @@ export class TokenController {
           ? this.tokenService.deleteTokenForCustomerId(data.customerId) &&
             'token_destroy_success'
           : 'token_destroy_bad_request',
-      errors: null,
     };
   }
 

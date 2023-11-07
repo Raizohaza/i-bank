@@ -1,14 +1,40 @@
 import mongoose, { ObjectId } from 'mongoose';
 
 export interface ITransactonSchema extends mongoose.Document {
-  account_id: ObjectId;
+  //basic info
+  customerId: ObjectId;
+  fromAccount: ObjectId;
+  fromName?: string;
+  toAccount: ObjectId;
+  toName?: string;
+  tellerEmpployeeId: string;
+  //details
   amount: number;
   type: string;
-  teller_emp_id: string;
+  // transTime: Date;
+  fee: number;
+  contentTransaction: string;
+  registerDay: Date;
+  //token
+  OTPToken: string;
+  OTPVerify: boolean;
 }
-export const TransactionSchema = new mongoose.Schema<ITransactonSchema>({
-  account_id: mongoose.Schema.Types.ObjectId,
-  amount: Number,
-  type: String,
-  teller_emp_id: String,
-});
+export const TransactionSchema = new mongoose.Schema<ITransactonSchema>(
+  {
+    amount: Number,
+    type: String,
+    // transTime: Date,
+    tellerEmpployeeId: String,
+    customerId: mongoose.Schema.Types.ObjectId,
+    fromAccount: mongoose.Schema.Types.ObjectId,
+    fromName: String,
+    toAccount: mongoose.Schema.Types.ObjectId,
+    toName: String,
+    OTPToken: String,
+    OTPVerify: Boolean,
+    fee: Number,
+    contentTransaction: String,
+    registerDay: Date,
+  },
+  { timestamps: true }
+);
