@@ -74,8 +74,8 @@ export class LinkingBanksController {
   @ApiHeader({ name: 'x-api-key' })
   @ApiHeader({ name: 'x-time' })
   @BasicAuthorization(true)
-  tranferToLinkedBank(@Param('accountNum') accountNum: string) {
-    return lastValueFrom(
+  async tranferToLinkedBank(@Param('accountNum') accountNum: string) {
+    return await lastValueFrom(
       this.linkingBanksService.send('remoteFindByAccountNumber', accountNum)
     );
   }

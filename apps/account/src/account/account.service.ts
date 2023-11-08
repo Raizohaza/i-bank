@@ -48,7 +48,7 @@ export class AccountService {
         },
       },
     ]);
-
+    console.log(data);
     return data;
   }
   async findOne(id: string) {

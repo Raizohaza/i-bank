@@ -34,7 +34,7 @@ export class ConfigService {
     };
     this.envConfig.receiverService = {
       options: {
-        host: '127.0.0.1',
+       // host: '127.0.0.1',
         port: parseInt(process.env.PORT, 10) || 3006,
       },
       transport: Transport.TCP,
@@ -47,7 +47,7 @@ export class ConfigService {
     };
     this.envConfig.linkingBankService = {
       options: {
-        port: parseInt(process.env.PORT, 10) || 3008,
+        port: parseInt(process.env.PORT, 10) || 3004,
       },
       transport: Transport.TCP,
     };

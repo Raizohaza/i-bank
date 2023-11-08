@@ -5,11 +5,11 @@ import { Transport, TcpOptions } from '@nestjs/microservices';
 import { LinkingBankModule } from './linking-bank/linking-bank.module';
 
 async function bootstrap() {
-  const port = new ConfigService().get('port') || 3008;
+  const port = new ConfigService().get('port') || 3004;
   const app = await NestFactory.createMicroservice(LinkingBankModule, {
     transport: Transport.TCP,
     options: {
-      host: '0.0.0.0',
+      //host: '0.0.0.0',
       port: port,
     },
   } as TcpOptions);

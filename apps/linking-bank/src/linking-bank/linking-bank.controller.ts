@@ -25,7 +25,9 @@ export class LinkingBankController {
 
   @MessagePattern('remoteFindByAccountNumber')
   findOne(@Payload() id: string) {
-    return this.linkingBankService.findOne(id);
+    const findOneLinkBank =  this.linkingBankService.findOne(id);
+    console.log(findOneLinkBank);
+    return findOneLinkBank;
   }
 
   @MessagePattern('updateLinkingBank')
