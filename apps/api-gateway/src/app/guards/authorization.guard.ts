@@ -46,7 +46,7 @@ export class AuthGuard implements CanActivate {
       const time: string = request?.headers?.['x-time'];
       const url: Request = context.switchToHttp().getRequest().url;
       const date = new Date(Number.parseInt(time));
-      const secret = this.config.get('x-secret');
+      const secret = this.config.get('X_SECRET');
       const now: number = Date.now();
       const expiratedTime = 60000 * 200; //200 min
       if (now - date.getTime() > expiratedTime) {

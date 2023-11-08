@@ -3,7 +3,6 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "install": "prebuild-install --runtime napi || node-gyp rebuild",
     "start": "nx serve",
     "start2": "node ./dist/apps/api-gateway/main.js 6789",
     "start3": "nx build && node ./dist/apps/api-gateway/main.js 6969",
