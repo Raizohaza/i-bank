@@ -10,9 +10,6 @@ export interface IAccountSchema extends mongoose.Document {
   balance: number;
   accountNumber: string;
 }
-
-export class Account {}
-
 export const AccountSchema = new mongoose.Schema<IAccountSchema>(
   {
     customerId: {

@@ -51,6 +51,12 @@ export class ConfigService {
       },
       transport: Transport.TCP,
     };
+    this.envConfig.employeeService = {
+      options: {
+        port: parseInt(process.env.PORT, 10) || 4001,
+      },
+      transport: Transport.TCP,
+    };
   }
   get(key: string): unknown {
     return this.envConfig[key];

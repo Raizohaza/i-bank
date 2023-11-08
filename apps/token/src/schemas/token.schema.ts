@@ -6,9 +6,9 @@ function transformValue(doc, ret: { [key: string]: unknown }) {
 
 export const TokenSchema = new mongoose.Schema(
   {
-    customer_id: {
+    uid: {
       type: String,
-      required: [true, 'Customer can not be empty'],
+      required: [true, 'id can not be empty'],
     },
     token: {
       type: String,

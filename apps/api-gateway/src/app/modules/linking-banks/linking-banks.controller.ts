@@ -15,12 +15,23 @@ import {
   BasicAuthorization,
 } from '../../decorators/authorization.decorator';
 import { lastValueFrom } from 'rxjs';
-import { createKey, decrypt, encrypt, hash } from '../../utils/rsa.encrypt';
+import {
+  abineEncrypt,
+  createKey,
+  decrypt,
+  encrypt,
+  hash,
+  signature,
+} from '../../utils/rsa.encrypt';
 import fetch from 'node-fetch';
 import { ConfigService } from '@nestjs/config';
 import { createReadStream } from 'fs';
 import { join } from 'path';
-
+import { CreateTransactionAbineDto } from './dto/create-transaction-abine.dto';
+import { KeyLike } from 'crypto';
+import { Verify } from '../../decorators/rsa.decorator';
+import * as fs from 'fs';
+import { defaultHash } from '../../utils/hash';
 @ApiTags('linking-banks')
 @Controller('linking-banks')
 export class LinkingBanksController {
@@ -59,12 +70,21 @@ export class LinkingBanksController {
     );
   }
 
+  @Post('transfer/:accountNum')
+  @ApiHeader({ name: 'x-api-key' })
+  @ApiHeader({ name: 'x-time' })
+  @BasicAuthorization(true)
+  tranferToLinkedBank(@Param('accountNum') accountNum: string) {
+    return lastValueFrom(
+      this.linkingBanksService.send('remoteFindByAccountNumber', accountNum)
+    );
+  }
+
   @Get('external/account/:accountNum')
   // @BasicAuthorization(true)
   findOneExternal(@Param('accountNum') accountNum: string) {
     const HOME = 'https://abine.fly.dev';
     const ACCOUNT = `/api/external/account/${accountNum}`; //1234567891011
-    const TRANSFER = '/api/external/transfer';
     const SECRET_KEY = this.config.get('SECRET_KEY');
 
     const getAccountInfo = async () => {
@@ -82,19 +102,114 @@ export class LinkingBanksController {
     return getAccountInfo();
   }
 
-  @Get('rsa/generateKey')
-  generateKey() {
-    createKey();
+  @Post('external/transfer/out')
+  // @BasicAuthorization(true)
+  async transferExternalOut(@Body() tranferDTO: CreateTransactionAbineDto) {
+    const HOME = 'https://abine.fly.dev';
+    const TRANSFER = '/api/external/transfer';
+    const now = Date.now().toString();
+    const feePayer: 'SENDER' | 'RECIPIENT' = 'RECIPIENT';
+    const stream = await fetch(HOME + '/public.pem');
+
+    const publicKey: KeyLike = await new Promise((resolve, reject) => {
+      res.body?.on('data', (chunk) => {
+        resolve(chunk.toString());
+      });
+      stream.body?.on('error', reject);
+    });
+    const res = await fetch(HOME + TRANSFER, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Auth: hash(TRANSFER + now + process.env.SECRET_KEY),
+        Time: now,
+      },
+      body: JSON.stringify({
+        encrypted: abineEncrypt(
+          {
+            fromAccountNumber: tranferDTO.fromAccount,
+            toAccountNumber: tranferDTO.toAccount,
+            amount: tranferDTO.amount,
+            content: tranferDTO.contentTransaction,
+            feePayer,
+          },
+          publicKey
+        ),
+      }),
+    });
+
+    return res.json();
   }
 
-  @Get('rsa/encrypt')
-  encrypt() {
-    return encrypt({ message: 'hi mom' });
+  @Post('external/transfer/in')
+  @ApiHeader({ name: 'x-api-key' })
+  @ApiHeader({ name: 'x-time' })
+  @BasicAuthorization(true)
+  @Verify(true)
+  async transferExternalIn(@Body() tranferDTO: CreateTransactionAbineDto) {
+    return {
+      message: 'Success',
+      data: {
+        sign: signature(tranferDTO).toString('base64'),
+      },
+    };
   }
-  @Post('rsa/decrypt')
-  decrypt(@Body() body: { message: string }) {
-    return decrypt(body.message);
+
+  @Get('external/transfer/in/exampleCall')
+  // @BasicAuthorization(true)
+  async exampleCall() {
+    const HOME = 'http://localhost:3333';
+    const TRANSFER = '/linking-banks/external/transfer/in';
+    const now = Date.now().toString();
+
+    const dataToEncrypt = {
+      fromAccountNumber: '1234567891011',
+      toAccountNumber: '1234567891012',
+      amount: 1_000_000,
+      content: 'aaaa',
+      feePayer: 'SENDER',
+    };
+
+    const tranferDTO: CreateTransactionAbineDto = {
+      fromAccount: dataToEncrypt.fromAccountNumber,
+      toAccount: dataToEncrypt.toAccountNumber,
+      amount: dataToEncrypt.amount,
+      contentTransaction: dataToEncrypt.content,
+      type: dataToEncrypt.feePayer,
+    };
+    const eData = JSON.stringify(tranferDTO);
+    const encrypted = encrypt(eData).toString('base64');
+    const sign = signature(eData).toString('base64');
+
+    const res = await fetch(HOME + TRANSFER, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Auth: hash(TRANSFER + now + process.env.SECRET_KEY),
+        Time: now,
+      },
+      body: JSON.stringify({ encrypted, sign }),
+    });
+    const time: string = Date.now().toString();
+
+    const token = defaultHash(time, TRANSFER);
+
+    return JSON.stringify({ time, token, encrypted, sign });
   }
+
+  // @Get('rsa/generateKey')
+  // generateKey() {
+  //   createKey();
+  // }
+
+  // @Get('rsa/encrypt')
+  // encrypt() {
+  //   return encrypt({ message: 'hi mom' });
+  // }
+  // @Post('rsa/decrypt')
+  // decrypt(@Body() body: { message: string }) {
+  //   return decrypt(body.message);
+  // }
 
   @Get('public.pem')
   @ApiHeader({ name: 'x-api-key' })

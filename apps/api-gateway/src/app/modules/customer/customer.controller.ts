@@ -115,7 +115,7 @@ export class CustomerController {
     const createTokenResponse: IServiveTokenCreateResponse =
       await firstValueFrom(
         this.tokenServiceClient.send('token_create', {
-          customerId: createCustomerResponse.data.id,
+          uid: createCustomerResponse.data.id,
         })
       );
 
@@ -156,7 +156,7 @@ export class CustomerController {
     const createTokenResponse: IServiveTokenCreateResponse =
       await firstValueFrom(
         this.tokenServiceClient.send('token_create', {
-          customerId: getCustomerResponse.data.id,
+          uid: getCustomerResponse.data.id,
         })
       );
 
@@ -181,7 +181,7 @@ export class CustomerController {
     const destroyTokenResponse: IServiceTokenDestroyResponse =
       await firstValueFrom(
         this.tokenServiceClient.send('token_destroy', {
-          customerId: customerInfo.id,
+          uid: customerInfo.id,
         })
       );
 

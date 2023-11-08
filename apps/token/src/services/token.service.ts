@@ -11,10 +11,10 @@ export class TokenService {
     @InjectModel('Token') private readonly tokenModel: Model<IToken>,
   ) {}
 
-  public createToken(customerId: string): Promise<IToken> {
+  public createToken(uid: string): Promise<IToken> {
     const token = this.jwtService.sign(
       {
-        customerId,
+        uid: uid,
       },
       {
         expiresIn: 30 * 24 * 60 * 60,
@@ -22,16 +22,16 @@ export class TokenService {
     );
 
     return new this.tokenModel({
-      customer_id: customerId,
+      uid: uid,
       token,
     }).save();
   }
 
-  public async deleteTokenForCustomerId(
-    customerId: string,
+  public async deleteTokenForUid(
+    uid: string,
   ): Promise<Query<unknown, unknown>> {
     return await this.tokenModel.remove({
-      customer_id: customerId,
+      uid: uid,
     });
   }
 
@@ -47,13 +47,13 @@ export class TokenService {
           tokenModel[0].token,
         )) as {
           exp: number;
-          customerId: unknown;
+          uid: unknown;
         };
         if (!tokenData || tokenData.exp <= Math.floor(+new Date() / 1000)) {
           result = null;
         } else {
           result = {
-            customerId: tokenData.customerId,
+            uid: tokenData.uid,
           };
         }
       } catch (e) {

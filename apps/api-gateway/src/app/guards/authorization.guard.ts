@@ -4,7 +4,6 @@ import {
   CanActivate,
   ExecutionContext,
   HttpException,
-  HttpStatus,
 } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
 import { Reflector } from '@nestjs/core';
@@ -22,6 +21,9 @@ export class AuthGuard implements CanActivate {
     @Inject('TOKEN_SERVICE') private readonly tokenServiceClient: ClientProxy,
     @Inject('CUSTOMER_SERVICE')
     private readonly customerServiceClient: ClientProxy,
+
+    @Inject('EMPLOYEE_SERVICE')
+    private readonly employeeServiceClient: ClientProxy,
     private config: ConfigService
   ) {}
 
@@ -35,7 +37,13 @@ export class AuthGuard implements CanActivate {
       'basicSecured',
       context.getHandler()
     );
-    if (!secured && !basicSecured) {
+
+    const empSercured = this.reflector.get<string[]>(
+      'empSercured',
+      context.getHandler()
+    );
+
+    if (!secured && !basicSecured && !empSercured) {
       return true;
     }
 
@@ -55,43 +63,46 @@ export class AuthGuard implements CanActivate {
       const hash = (secret: string) =>
         crypto.createHash('sha256').update(secret).digest('hex');
       const hashToken = hash(url + time + secret);
-      // console.log({
-      //   token,
-      //   hashToken,
-      //   time,
-      //   url,
-      //   secret,
-      //   date,
-      // });
+      console.log({ url, token, hashToken, secret });
       if (token !== hashToken) {
         throw new BadRequestException('Invalid Token');
       }
       return true;
     }
+    console.log(request);
     const token = request?.headers?.authorization?.split(' ')?.[1];
     if (!token) {
-      throw new HttpException('Invalid Token', HttpStatus.BAD_REQUEST);
+      throw new BadRequestException('Invalid Token');
     }
-    const customerTokenInfo = await firstValueFrom(
+    const parseToken = await firstValueFrom(
       this.tokenServiceClient.send('token_decode', { token })
     );
-    if (!customerTokenInfo || !customerTokenInfo.data) {
+
+    if (empSercured) {
+      const employeeInfo = await firstValueFrom(
+        this.employeeServiceClient.send('findOneEmployee', parseToken.data.uid)
+      );
+      if (!employeeInfo) {
+        return false;
+      }
+      request.employee = employeeInfo.data;
+      return true;
+    }
+
+    if (!parseToken || !parseToken.data) {
       throw new HttpException(
         {
-          message: customerTokenInfo.message,
+          message: parseToken.message,
           data: null,
         },
-        customerTokenInfo.status
+        parseToken.status
       );
     }
 
     const customerInfo = await firstValueFrom(
-      this.customerServiceClient.send(
-        'customer_get_by_id',
-        customerTokenInfo.data.customerId
-      )
+      this.customerServiceClient.send('customer_get_by_id', parseToken.data.uid)
     );
-
+    if (!customerInfo) return false;
     request.customer = customerInfo.data;
     return true;
   }

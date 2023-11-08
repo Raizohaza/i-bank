@@ -1,7 +1,7 @@
-export class CreateEmployeeDto {
+export interface IEmployeeSchema {
   name: string;
   position?: string;
-  phone: string;
+  phone?: string;
   login?: string;
   password: string;
   email: string;

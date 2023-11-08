@@ -11,6 +11,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthGuard } from './guards/authorization.guard';
 import { PermissionGuard } from './guards/permission.guard';
+import { RsaGuard } from './guards/rsa.guard';
 import { LoggerMiddleware } from './middlewares/logger.middleware';
 import { RpcServicesModule } from './modules/RpcServices.module';
 
@@ -46,12 +47,23 @@ import { RpcServicesModule } from './modules/RpcServices.module';
       inject: [ConfigService],
     },
     {
+      provide: 'EMPLOYEE_SERVICE',
+      useFactory: (configService: ConfigService) => {
+        return ClientProxyFactory.create(configService.get('employeeService'));
+      },
+      inject: [ConfigService],
+    },
+    {
       provide: APP_GUARD,
       useClass: AuthGuard,
     },
     {
       provide: APP_GUARD,
       useClass: PermissionGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RsaGuard,
     },
   ],
 })

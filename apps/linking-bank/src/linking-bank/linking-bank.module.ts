@@ -9,7 +9,6 @@ import { ClientProxyFactory } from '@nestjs/microservices';
 @Module({
   imports: [
     ConfigService,
-
     MongooseModule.forRootAsync({
       useClass: MongoConfigService,
     }),

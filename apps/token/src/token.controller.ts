@@ -10,20 +10,17 @@ export class TokenController {
   constructor(private readonly tokenService: TokenService) {}
   private readonly logger = new Logger(TokenController.name);
   @MessagePattern('token_create')
-  public async createToken(data: {
-    customerId: string;
-  }): Promise<ITokenResponse> {
+  public async createToken(data: { uid: string }): Promise<ITokenResponse> {
     let result: ITokenResponse;
-    if (data && data.customerId) {
+    if (data && data.uid) {
       try {
-        const createResult = await this.tokenService.createToken(
-          data.customerId,
-        );
+        const createResult = await this.tokenService.createToken(data.uid);
         result = {
           status: HttpStatus.CREATED,
           message: 'token_create_success',
           token: createResult.token,
         };
+        console.log(createResult);
       } catch (e) {
         result = {
           status: HttpStatus.BAD_REQUEST,
@@ -32,6 +29,7 @@ export class TokenController {
         };
       }
     } else {
+      console.log(data);
       result = {
         status: HttpStatus.BAD_REQUEST,
         message: 'token_create_bad_request',
@@ -44,13 +42,13 @@ export class TokenController {
 
   @MessagePattern('token_destroy')
   public async destroyToken(data: {
-    customerId: string;
+    uid: string;
   }): Promise<ITokenDestroyResponse> {
     return {
-      status: data && data.customerId ? HttpStatus.OK : HttpStatus.BAD_REQUEST,
+      status: data && data.uid ? HttpStatus.OK : HttpStatus.BAD_REQUEST,
       message:
-        data && data.customerId
-          ? this.tokenService.deleteTokenForCustomerId(data.customerId) &&
+        data && data.uid
+          ? this.tokenService.deleteTokenForUid(data.uid) &&
             'token_destroy_success'
           : 'token_destroy_bad_request',
     };
