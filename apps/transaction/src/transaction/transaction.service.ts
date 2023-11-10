@@ -9,9 +9,9 @@ export class TransactionService {
   constructor(
     @InjectModel('Transaction') private readonly model: Model<ITransaction>
   ) {}
-  create(createTransactionDto: CreateTransactionDto) {
+  async create(createTransactionDto: CreateTransactionDto) {
     const newTrans = new this.model(createTransactionDto);
-    return newTrans.save();
+    return await newTrans.save();
   }
 
   findAll() {

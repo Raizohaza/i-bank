@@ -9,8 +9,8 @@ export class TransactionController {
   constructor(private readonly transactionService: TransactionService) {}
 
   @MessagePattern('createTransaction')
-  create(@Payload() createTransactionDto: CreateTransactionDto) {
-    return this.transactionService.create(createTransactionDto);
+  async create(@Payload() createTransactionDto: CreateTransactionDto) {
+    return await this.transactionService.create(createTransactionDto);
   }
 
   @MessagePattern('findAllTransaction')

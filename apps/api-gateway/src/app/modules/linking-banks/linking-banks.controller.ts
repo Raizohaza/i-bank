@@ -38,6 +38,8 @@ export class LinkingBanksController {
   constructor(
     @Inject('LINKING_BANKS_SERVICE')
     private readonly linkingBanksService: ClientProxy,
+    @Inject('TRANSACTION_SERVICE')
+    private readonly transactionService: ClientProxy,
     @Inject('CONFIG_SERVICE')
     private config: ConfigService
   ) {}
@@ -147,10 +149,16 @@ export class LinkingBanksController {
   @BasicAuthorization(true)
   @Verify(true)
   async transferExternalIn(@Body() tranferDTO: CreateTransactionAbineDto) {
-    return {
+    console.log('hi');
+    const data = await lastValueFrom(
+      this.transactionService.send('createTransaction', tranferDTO)
+    );
+    console.log(data);
+    return await {
       message: 'Success',
       data: {
-        sign: signature(tranferDTO).toString('base64'),
+        data,
+        sign: await signature(tranferDTO).toString('base64'),
       },
     };
   }
