@@ -50,4 +50,5 @@ export class CreateTransactionAbineDto {
     example: 'ObjectId',
   })
   OTPVerify?: boolean;
+  sign?: string;
 }

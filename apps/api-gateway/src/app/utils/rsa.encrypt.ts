@@ -98,12 +98,15 @@ export function isVerified(data) {
   );
 }
 
-export function isVerifiedWithSign(data, sign, publicKey) {
-  // const publicKey = Buffer.from(
-  //   fs.readFileSync('public.pem', { encoding: 'utf-8' })
-  // );
-
-  // console.log({ data, sign });
+export function isVerifiedWithSign({
+  data,
+  sign,
+  publicKey,
+}: {
+  data: Buffer;
+  sign: Buffer;
+  publicKey: Buffer;
+}) {
   return crypto.verify(
     'sha256',
     data,

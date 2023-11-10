@@ -155,10 +155,10 @@ export class LinkingBanksController {
     return {
       message: 'Success',
       response: {
-        res: data,
-        sign: (
-          await signature(Buffer.from(JSON.stringify(tranferDTO)))
-        ).toString('base64'),
+        abineSign: tranferDTO.sign,
+        sign: signature(Buffer.from(JSON.stringify(tranferDTO))).toString(
+          'base64'
+        ),
       },
     };
   }
