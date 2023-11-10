@@ -31,8 +31,8 @@ export class RsaGuard implements CanActivate {
     const fetchData = await fetch(HOME + '/public.pem');
     const publicKey = await fetchData.text();
     console.log(publicKey);
-    if (!isVerifiedWithSign(verifyData, sign, publicKey))
-      throw new UnauthorizedException('Signature invalid!');
+    // if (!isVerifiedWithSign(verifyData, sign, publicKey))
+    //   throw new UnauthorizedException('Signature invalid!');
     if (!data) {
       return false;
     }

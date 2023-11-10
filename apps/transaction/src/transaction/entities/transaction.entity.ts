@@ -3,7 +3,7 @@ import mongoose, { ObjectId } from 'mongoose';
 export interface ITransactonSchema extends mongoose.Document {
   //basic info
   customerId: ObjectId;
-  fromAccount: ObjectId;
+  fromAccount: string;
   fromName?: string;
   toAccount: ObjectId;
   toName?: string;
@@ -26,9 +26,9 @@ export const TransactionSchema = new mongoose.Schema<ITransactonSchema>(
     // transTime: Date,
     tellerEmpployeeId: String,
     customerId: mongoose.Schema.Types.ObjectId,
-    fromAccount: mongoose.Schema.Types.ObjectId,
+    fromAccount: String,
     fromName: String,
-    toAccount: mongoose.Schema.Types.ObjectId,
+    toAccount: String,
     toName: String,
     OTPToken: String,
     OTPVerify: Boolean,

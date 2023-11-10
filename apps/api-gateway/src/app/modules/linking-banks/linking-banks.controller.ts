@@ -149,16 +149,16 @@ export class LinkingBanksController {
   @BasicAuthorization(true)
   @Verify(true)
   async transferExternalIn(@Body() tranferDTO: CreateTransactionAbineDto) {
-    console.log('hi');
     const data = await lastValueFrom(
       this.transactionService.send('createTransaction', tranferDTO)
     );
-    console.log(data);
-    return await {
+    return {
       message: 'Success',
-      data: {
-        data,
-        sign: await signature(tranferDTO).toString('base64'),
+      response: {
+        res: data,
+        sign: (
+          await signature(Buffer.from(JSON.stringify(tranferDTO)))
+        ).toString('base64'),
       },
     };
   }
