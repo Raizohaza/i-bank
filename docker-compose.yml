@@ -1,69 +1,55 @@
-version: "3.8"
-
-
-networks:
-  corp:
-    driver: bridge
+version: '3.8'
 
 services:
   token:
     container_name: token
-    build:
-      context: ./
-      cache_from:
-        - my-base-image:nx-base
-      dockerfile: ./apps/token/Dockerfile
-      args:
-        NODE_ENV: 'development'
-        BUILD_FLAG: ''
-    image: token
+    extends:
+      file: docker-compose.base.yml
+      service: nx-app-base
+    command: npm run start:token
     ports:
       - 3002:3002
     environment:
       NODE_ENV: 'development'
       PORT: 3002
-    networks:
-      - corp
+    # networks:
+    #   - corp
     restart: on-failure
   customer:
     container_name: customer
-    build:
-      context: ./
-
-      cache_from:
-        - my-base-image:nx-base
-      dockerfile: ./apps/customer/Dockerfile
-      args:
-        NODE_ENV: 'development'
-        BUILD_FLAG: ''
-    image: customer
+    extends:
+      file: docker-compose.base.yml
+      service: nx-app-base
+    command: npm run start:customer
     ports:
       - 3001:3001
     environment:
       NODE_ENV: 'development'
 
       PORT: 3001
-    networks:
-      - corp
+    # networks:
+    #   - corp
     restart: on-failure
 
   api-gateway:
     container_name: api-gateway
-    build:
-      context: ./
-      cache_from:
-        - my-base-image:nx-base
-      dockerfile: ./apps/api-gateway/Dockerfile
-      args:
-        NODE_ENV: 'development'
-        BUILD_FLAG: ''
-    image: api-gateway
+    extends:
+      file: docker-compose.base.yml
+      service: nx-app-base
+    command: npm run start:gateway
     ports:
       - 3000:3000
     environment:
       NODE_ENV: 'development'
       PORT: 3000
-
-    networks:
-      - corp
+    depends_on:
+      - token
+      - customer
+    # networks:
+    #   - corp
     restart: on-failure
+volumes:
+  mono-node-modules: null
+
+networks:
+  corp:

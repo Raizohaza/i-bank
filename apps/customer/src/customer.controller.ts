@@ -20,6 +20,7 @@ export class CustomerController {
     password: string;
   }): Promise<ICustomerSearchResponse> {
     let result: ICustomerSearchResponse;
+    console.log(searchParams);
 
     if (searchParams.email && searchParams.password) {
       const customer = await this.customerService.searchCustomer({

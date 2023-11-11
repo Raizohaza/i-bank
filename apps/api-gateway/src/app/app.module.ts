@@ -25,6 +25,7 @@ import { RpcServicesModule } from './modules/RpcServices.module';
       provide: 'CUSTOMER_SERVICE',
       useFactory: (configService: ConfigService) => {
         const customerServiceOptions = configService.get('customerService');
+        console.log({ customerServiceOptions });
         return ClientProxyFactory.create(customerServiceOptions);
       },
       inject: [ConfigService],
@@ -33,6 +34,8 @@ import { RpcServicesModule } from './modules/RpcServices.module';
       provide: 'TOKEN_SERVICE',
       useFactory: (configService: ConfigService) => {
         const tokenServiceOptions = configService.get('tokenService');
+        console.log({ tokenServiceOptions });
+
         return ClientProxyFactory.create(tokenServiceOptions);
       },
       inject: [ConfigService],

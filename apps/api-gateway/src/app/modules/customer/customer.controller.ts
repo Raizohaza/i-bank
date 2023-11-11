@@ -135,13 +135,16 @@ export class CustomerController {
   public async loginCustomer(
     @Body() loginRequest: LoginCustomerDto
   ): Promise<LoginCustomerResponseDto> {
+    console.log({ loginRequest, customerService: this.customerService });
+
     const getCustomerResponse: IServiceCustomerSearchResponse =
-      await firstValueFrom(
+      await lastValueFrom(
         this.customerService.send(
           'customer_search_by_credentials',
           loginRequest
         )
       );
+    console.log(getCustomerResponse);
 
     if (getCustomerResponse.status !== HttpStatus.OK) {
       throw new HttpException(

@@ -12,7 +12,15 @@
     "start-concurrently": "concurrently npm:start-services1 npm:start-services2",
     "start-gateway": "nx serve api-gateway",
     "build": "nx build",
-    "test": "nx test"
+    "test": "nx test",
+    "start:gateway": "node ./dist/apps/api-gateway/main.js",
+    "start:token": "node ./dist/apps/token/main.js",
+    "start:customer": "node ./dist/apps/customer/main.js",
+    "start:account": "node ./dist/apps/account/main.js",
+    "start:transaction": "node ./dist/apps/transaction/main.js",
+    "start:employee": "node ./dist/apps/employee/main.js",
+    "start:linking-bank": "node ./dist/apps/linking-bank/main.js",
+    "start:services": "concurrently npm:start:token npm:start:customer npm:start:account npm:start:transaction"
   },
   "private": true,
   "dependencies": {
