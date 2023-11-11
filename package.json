@@ -9,7 +9,7 @@
     "start-services1": "nx run-many --target=serve --projects=token,customer,account",
     "start-services2": "nx run-many --target=serve --projects=receivers,transaction,employee",
     "start-services3": "nx run-many --target=serve --projects=linking-bank",
-    "start-concurrently": "concurrently npm:start-services1 npm:start-services2",
+    "start-concurrently": "npx concurrently npm:start-services1 npm:start-services2",
     "start-gateway": "nx serve api-gateway",
     "build": "nx build",
     "test": "nx test",

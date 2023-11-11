@@ -27,10 +27,9 @@ export class RsaGuard implements CanActivate {
     if (!data) {
       throw new BadRequestException('Body parse failure!');
     }
-    console.log(data.toString('utf-8'));
     const verifyData = Buffer.from(data.toString('utf-8'));
+    const abineSign = request.body.sign;
     const sign = Buffer.from(request.body.sign, 'base64');
-
     const fetchData = await fetch(HOME + '/public.pem');
     const publicKey: KeyLike = await fetchData.text();
     const bfPublicKey: Buffer = Buffer.from(publicKey.toString());
@@ -43,7 +42,10 @@ export class RsaGuard implements CanActivate {
     if (!data) {
       return false;
     }
-    request.body = JSON.parse(data.toString('utf-8'));
+    const decryptedData = JSON.parse(data.toString());
+    // decryptedData.sign = abineSign;
+    request.body = decryptedData;
+    console.log(request.body);
 
     return true;
   }

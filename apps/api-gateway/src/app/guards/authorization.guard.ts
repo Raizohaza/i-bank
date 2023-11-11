@@ -63,7 +63,7 @@ export class AuthGuard implements CanActivate {
       const hash = (secret: string) =>
         crypto.createHash('sha256').update(secret).digest('hex');
       const hashToken = hash(url + time + secret);
-      console.log({ url, token, hashToken, secret });
+      console.log({ url, token, hashToken, secret, time });
       if (token !== hashToken) {
         throw new BadRequestException('Invalid Token');
       }

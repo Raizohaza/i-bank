@@ -4,14 +4,25 @@ import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { ITransaction } from './transaction.interface';
 import { InjectModel } from '@nestjs/mongoose';
+import { plainToClass } from 'class-transformer';
 @Injectable()
 export class TransactionService {
   constructor(
     @InjectModel('Transaction') private readonly model: Model<ITransaction>
   ) {}
   async create(createTransactionDto: CreateTransactionDto) {
-    const newTrans = new this.model(createTransactionDto);
-    return await newTrans.save();
+    const data = new CreateTransactionDto();
+    const keys = JSON.parse(JSON.stringify(createTransactionDto));
+    console.log(keys);
+
+    // for (const key of keys) {
+    //   data[key] = createTransactionDto[key];
+    // }
+    console.log({ data });
+    const newTrans = await this.model.create(createTransactionDto);
+    console.log(newTrans);
+
+    return await newTrans;
   }
 
   findAll() {

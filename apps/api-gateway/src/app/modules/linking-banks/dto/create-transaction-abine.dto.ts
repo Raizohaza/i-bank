@@ -3,24 +3,15 @@ import { ApiProperty } from '@nestjs/swagger';
 export class CreateTransactionAbineDto {
   customerId?: string;
   @ApiProperty({
-    example: '6390aba8cbca1ab1879a96d8',
+    example: '1671552887',
   })
   fromAccount: string;
-  @ApiProperty({
-    example: 'A',
-  })
   fromName?: string;
   @ApiProperty({
-    example: '638f00e407c33e2de2948525',
+    example: '1234567891012',
   })
   toAccount: string;
-  @ApiProperty({
-    example: 'B',
-  })
   toName?: string;
-  @ApiProperty({
-    example: 'ObjectIdEmp',
-  })
   tellerEmpployeeId?: string;
   @ApiProperty({
     example: 50_000,
@@ -41,14 +32,8 @@ export class CreateTransactionAbineDto {
   contentTransaction: string;
 
   registerDay?: Date = new Date();
-  @ApiProperty({
-    example: 'ObjectId',
-  })
   //token
   OTPToken?: string;
-  @ApiProperty({
-    example: 'ObjectId',
-  })
   OTPVerify?: boolean;
   sign?: string;
 }

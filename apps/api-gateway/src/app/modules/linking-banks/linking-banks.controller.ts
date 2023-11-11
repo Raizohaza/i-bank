@@ -32,6 +32,7 @@ import { KeyLike } from 'crypto';
 import { Verify } from '../../decorators/rsa.decorator';
 import * as fs from 'fs';
 import { defaultHash } from '../../utils/hash';
+import { CreateTransactionDto } from './dto/create-transaction.dto';
 @ApiTags('linking-banks')
 @Controller('linking-banks')
 export class LinkingBanksController {
@@ -111,14 +112,41 @@ export class LinkingBanksController {
     const TRANSFER = '/api/external/transfer';
     const now = Date.now().toString();
     const feePayer: 'SENDER' | 'RECIPIENT' = 'RECIPIENT';
-    const stream = await fetch(HOME + '/public.pem');
+    const fetchData = await fetch(HOME + '/public.pem');
+    const publicKey: KeyLike = await fetchData.text();
+    const sign = signature(
+      Buffer.from(
+        JSON.stringify({
+          fromAccountNumber: tranferDTO.fromAccount,
+          toAccountNumber: tranferDTO.toAccount,
+          amount: tranferDTO.amount,
+          content: tranferDTO.contentTransaction,
+          feePayer,
+        })
+      )
+    ).toString('base64');
 
-    const publicKey: KeyLike = await new Promise((resolve, reject) => {
-      res.body?.on('data', (chunk) => {
-        resolve(chunk.toString());
-      });
-      stream.body?.on('error', reject);
+    const encryptedData = {
+      encrypted: abineEncrypt(
+        {
+          fromAccountNumber: tranferDTO.fromAccount,
+          toAccountNumber: tranferDTO.toAccount,
+          amount: tranferDTO.amount,
+          content: tranferDTO.contentTransaction,
+          feePayer,
+        },
+        publicKey
+      ),
+      signature: sign,
+    };
+    console.log({
+      headers: {
+        Auth: hash(TRANSFER + now + process.env.SECRET_KEY),
+        Time: now,
+      },
+      body: JSON.stringify({ ...encryptedData }),
     });
+
     const res = await fetch(HOME + TRANSFER, {
       method: 'POST',
       headers: {
@@ -126,18 +154,7 @@ export class LinkingBanksController {
         Auth: hash(TRANSFER + now + process.env.SECRET_KEY),
         Time: now,
       },
-      body: JSON.stringify({
-        encrypted: abineEncrypt(
-          {
-            fromAccountNumber: tranferDTO.fromAccount,
-            toAccountNumber: tranferDTO.toAccount,
-            amount: tranferDTO.amount,
-            content: tranferDTO.contentTransaction,
-            feePayer,
-          },
-          publicKey
-        ),
-      }),
+      body: JSON.stringify({ ...encryptedData }),
     });
 
     return res.json();
@@ -148,14 +165,22 @@ export class LinkingBanksController {
   @ApiHeader({ name: 'x-time' })
   @BasicAuthorization(true)
   @Verify(true)
-  async transferExternalIn(@Body() tranferDTO: CreateTransactionAbineDto) {
+  async transferExternalIn(@Body() tranferDTO: CreateTransactionDto) {
+    // const tranferDTO = new CreateTransactionDto();
+    // const dataFromBody = JSON.parse(body);
+
+    // for (const key of Object.keys(dataFromBody)) {
+    //   tranferDTO[key] = dataFromBody[key];
+    // }
+
     const data = await lastValueFrom(
       this.transactionService.send('createTransaction', tranferDTO)
     );
+
     return {
       message: 'Success',
       response: {
-        abineSign: tranferDTO.sign,
+        abineSign: tranferDTO['sign'],
         sign: signature(Buffer.from(JSON.stringify(tranferDTO))).toString(
           'base64'
         ),
@@ -185,9 +210,10 @@ export class LinkingBanksController {
       contentTransaction: dataToEncrypt.content,
       type: dataToEncrypt.feePayer,
     };
-    const eData = JSON.stringify(tranferDTO);
-    const encrypted = encrypt(eData).toString('base64');
-    const sign = signature(eData).toString('base64');
+    const encrypted = encrypt(tranferDTO).toString('base64');
+    const sign = signature(Buffer.from(JSON.stringify(tranferDTO))).toString(
+      'base64'
+    );
 
     const res = await fetch(HOME + TRANSFER, {
       method: 'POST',
