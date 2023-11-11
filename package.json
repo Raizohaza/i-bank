@@ -11,7 +11,7 @@
     "start-services3": "nx run-many --target=serve --projects=linking-bank",
     "start-concurrently": "npx concurrently npm:start-services1 npm:start-services2",
     "start-gateway": "nx serve api-gateway",
-    "build": "nx build",
+    "build": "nx run-many --target=build --projects=api-gateway,token,customer,account,receivers,transaction,employee,linking-bank",
     "test": "nx test",
     "start:gateway": "node ./dist/apps/api-gateway/main.js",
     "start:token": "node ./dist/apps/token/main.js",
@@ -20,7 +20,8 @@
     "start:transaction": "node ./dist/apps/transaction/main.js",
     "start:employee": "node ./dist/apps/employee/main.js",
     "start:linking-bank": "node ./dist/apps/linking-bank/main.js",
-    "start:services": "concurrently npm:start:token npm:start:customer npm:start:account npm:start:transaction"
+    "start:services": "concurrently npm:start:token npm:start:customer npm:start:account npm:start:transaction",
+    "start:dist": "concurrently \"npm run start:gateway\" \"npm run start:token\" \"npm run start:customer\" \"npm run start:account\" \"npm run start:transaction\" \"npm run start:employee\" \"npm run start:linking-bank\""
   },
   "private": true,
   "dependencies": {
@@ -44,6 +45,7 @@
     "bson-ext": "^4.0.3",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
+    "concurrently": "^7.6.0",
     "dotenv": "^16.0.3",
     "mongoose": "^6.7.5",
     "node-fetch": "^2.6.1",
@@ -79,7 +81,7 @@
     "eslint-plugin-prettier": "^4.2.1",
     "jest": "28.1.1",
     "jest-environment-jsdom": "28.1.1",
-    "nx": "^15.3.0",
+    "nx": "15.3.0",
     "parcel": "^2.7.0",
     "prettier": "^2.8.1",
     "process": "^0.11.10",
