@@ -73,7 +73,7 @@ export class CustomerService {
     account.type = 'PAYROLL';
 
     const newAccount = await lastValueFrom(
-      this.accountService.send('account_create', account)
+      this.accountService.send('accountCreate', account)
     );
     return newAccount;
   }

@@ -19,9 +19,10 @@
     "start:account": "node ./dist/apps/account/main.js",
     "start:transaction": "node ./dist/apps/transaction/main.js",
     "start:employee": "node ./dist/apps/employee/main.js",
+    "start:receivers": "node ./dist/apps/receivers/main.js",
     "start:linking-bank": "node ./dist/apps/linking-bank/main.js",
-    "start:services": "concurrently \"npm run start:token\" \"npm run start:customer\" \"npm run start:account\" \"npm run start:transaction\" \"npm run start:employee\" \"npm run start:linking-bank\"",
-    "start:dist": "concurrently \"npm run start:gateway\" \"npm run start:token\" \"npm run start:customer\" \"npm run start:account\" \"npm run start:transaction\" \"npm run start:employee\" \"npm run start:linking-bank\""
+    "start:services": "concurrently \"npm run start:token\" \"npm run start:customer\" \"npm run start:account\" \"npm run start:transaction\" \"npm run start:employee\" \"npm run start:linking-bank\" \"npm run start:receivers\"",
+    "start:dist": "concurrently \"npm run start:gateway\" \"npm run start:token\" \"npm run start:customer\" \"npm run start:account\" \"npm run start:transaction\" \"npm run start:employee\" \"npm run start:linking-bank\" \"npm run start:receivers\""
   },
   "private": true,
   "dependencies": {

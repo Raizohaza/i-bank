@@ -30,7 +30,6 @@ export class CreateTransactionAbineDto {
     example: 'Tranfer description',
   })
   contentTransaction: string;
-
   registerDay?: Date = new Date();
   //token
   OTPToken?: string;

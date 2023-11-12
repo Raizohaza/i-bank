@@ -28,21 +28,28 @@ export class ReceiverController {
 
   @Post()
   @Authorization(true)
-  async create(@Body() createReceiverDto: CreateReceiverDto) {
+  async create(
+    @Body() createReceiverDto: CreateReceiverDto,
+    @Req() request: IAuthorizedRequest
+  ) {
     if (!mongoose.isValidObjectId(createReceiverDto.accountId)) {
       throw new BadRequestException('Account ID is not valid!');
     }
+    createReceiverDto.customerId = request.customer.id;
     const result = await firstValueFrom(
       this.receiverService.send('createReceiver', createReceiverDto)
     );
     return result;
   }
 
-  @Get()
+  @Get('ByCustomerId')
   @Authorization(true)
-  async findAll() {
+  async findAll(@Req() request: IAuthorizedRequest) {
     const result = await firstValueFrom(
-      this.receiverService.send('findAllReceivers', {})
+      this.receiverService.send(
+        'findAllReceiversByCustomerId',
+        request.customer.id
+      )
     );
     return result;
   }

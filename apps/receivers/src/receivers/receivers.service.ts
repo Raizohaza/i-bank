@@ -33,7 +33,62 @@ export class ReceiversService {
   }
 
   async findAll() {
-    return await this.receiverModel.find();
+    // return await this.receiverModel.find();
+    return await this.receiverModel.aggregate([
+      {
+        $lookup: {
+          from: 'Accounts',
+          localField: 'accountId',
+          foreignField: '_id',
+          as: 'accounts',
+        },
+      },
+      {
+        $unwind: {
+          path: '$accounts',
+          preserveNullAndEmptyArrays: false,
+        },
+      },
+      {
+        $project: {
+          remindName: 1,
+          accountId: 1,
+          accountNumber: '$accounts.accountNumber',
+        },
+      },
+    ]);
+  }
+
+  async findAllByCustomerId(id: string) {
+    // return await this.receiverModel.find();
+    return await this.receiverModel.aggregate([
+      {
+        $match: {
+          customerId: id,
+        },
+      },
+      {
+        $lookup: {
+          from: 'Accounts',
+          localField: 'accountId',
+          foreignField: '_id',
+          as: 'accounts',
+        },
+      },
+      {
+        $unwind: {
+          path: '$accounts',
+          preserveNullAndEmptyArrays: false,
+        },
+      },
+      {
+        $project: {
+          remindName: 1,
+          accountId: 1,
+          accountNumber: '$accounts.accountNumber',
+        },
+      },
+    ]);
   }
 
   async findOne(id: string) {

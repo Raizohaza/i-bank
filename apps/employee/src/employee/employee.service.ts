@@ -15,7 +15,6 @@ export class EmployeeService {
     private jwtService: JwtService
   ) {}
   create(createEmployeeDto: CreateEmployeeDto) {
-    console.log(createEmployeeDto);
     return new this.employeeModel(createEmployeeDto).save();
   }
 
@@ -48,7 +47,6 @@ export class EmployeeService {
     };
   }
   update(id: string, updateEmployeeDto: UpdateEmployeeDto) {
-    console.log(updateEmployeeDto);
     return this.employeeModel.findByIdAndUpdate(id, updateEmployeeDto);
   }
 

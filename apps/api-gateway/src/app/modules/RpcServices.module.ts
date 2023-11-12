@@ -27,12 +27,7 @@ import { EmployeeController } from './employee/employee.controller';
       provide: 'CUSTOMER_SERVICE',
       useFactory: (configService: ConfigService) => {
         const customerServiceOptions = configService.get('customerService');
-        const customerService = ClientProxyFactory.create(
-          customerServiceOptions
-        );
-        console.log(customerService);
-
-        return customerService;
+        return ClientProxyFactory.create(customerServiceOptions);
       },
       inject: [ConfigService],
     },

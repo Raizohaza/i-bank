@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiHideProperty } from '@nestjs/swagger';
 import { IReceiver } from '../entities/receiver.entity';
 
 export class CreateReceiverDto implements IReceiver {
@@ -11,4 +11,6 @@ export class CreateReceiverDto implements IReceiver {
     example: 'userA',
   })
   remindName: string;
+  @ApiHideProperty()
+  customerId: string;
 }

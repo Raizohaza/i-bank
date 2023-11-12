@@ -97,7 +97,7 @@ export class AccountController {
   ): Promise<CreateAccountReponseDto> {
     body.customerId = request.customer.id;
     const accountResponse: IServiceAccount = await firstValueFrom(
-      this.accountService.send('account_create', body)
+      this.accountService.send('accountCreate', body)
     );
 
     return <CreateAccountReponseDto>{

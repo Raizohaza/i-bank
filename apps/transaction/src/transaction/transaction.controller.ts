@@ -13,7 +13,7 @@ export class TransactionController {
     const validateTrans = await this.transactionService.validateTransaction(
       createTransactionDto
     );
-    if (validateTrans)
+    if (validateTrans.validated)
       return await this.transactionService.create(createTransactionDto);
     throw new BadRequestException(
       `Validation failed: ${validateTrans.message}`

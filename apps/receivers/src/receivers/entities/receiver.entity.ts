@@ -7,6 +7,7 @@ function transformValue(doc, ret: { [key: string]: unknown }) {
 export interface IReceiverSchema extends mongoose.Document {
   accountId: ObjectId;
   remindName: string;
+  customerId: string;
 }
 
 export const ReceiverSchema = new mongoose.Schema<IReceiverSchema>(
@@ -16,6 +17,7 @@ export const ReceiverSchema = new mongoose.Schema<IReceiverSchema>(
       ref: 'accounts',
     },
     remindName: String,
+    customerId: String,
   },
   {
     timestamps: true,

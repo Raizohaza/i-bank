@@ -15,4 +15,7 @@ export class CreateTransactionDto {
   //token
   OTPToken: string;
   OTPVerify: boolean;
+  bank?: string;
+  sign?: string;
+  status?: string;
 }

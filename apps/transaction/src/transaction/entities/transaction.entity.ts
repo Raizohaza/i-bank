@@ -18,6 +18,9 @@ export interface ITransactonSchema extends mongoose.Document {
   //token
   OTPToken: string;
   OTPVerify: boolean;
+  bank: string;
+  sign?: string;
+  status: string;
 }
 export const TransactionSchema = new mongoose.Schema<ITransactonSchema>(
   {
@@ -35,6 +38,18 @@ export const TransactionSchema = new mongoose.Schema<ITransactonSchema>(
     fee: Number,
     contentTransaction: String,
     registerDay: Date,
+    bank: {
+      type: String,
+      default: 'iBank',
+    },
+    sign: {
+      type: String,
+      required: false,
+    },
+    status: {
+      type: String,
+      default: 'Success',
+    },
   },
   { timestamps: true }
 );

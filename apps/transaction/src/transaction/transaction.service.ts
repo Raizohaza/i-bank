@@ -1,24 +1,46 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { ITransaction } from './transaction.interface';
 import { InjectModel } from '@nestjs/mongoose';
 import { plainToClass } from 'class-transformer';
+import { ClientProxy } from '@nestjs/microservices';
+import { lastValueFrom } from 'rxjs';
 @Injectable()
 export class TransactionService {
   constructor(
-    @InjectModel('Transaction') private readonly model: Model<ITransaction>
+    @InjectModel('Transaction') private readonly model: Model<ITransaction>,
+    @Inject('ACCOUNT_SERVICE') private readonly accountService: ClientProxy
   ) {}
   async validateTransaction(createTransactionDto: CreateTransactionDto) {
+    const checkBalance = await lastValueFrom(
+      this.accountService.send('checkBalance', {
+        acountId: createTransactionDto.fromAccount,
+        amount: createTransactionDto.amount,
+      })
+    );
+    if (!checkBalance)
+      return {
+        validated: false,
+        message: 'Not enough balance remain',
+      };
     return {
+      validated: true,
       message: 'Success',
     };
   }
   async create(createTransactionDto: CreateTransactionDto) {
-    console.log({ createTransactionDto });
     const newTrans = await this.model.create(createTransactionDto);
-    console.log(newTrans);
+    const setBalance = await lastValueFrom(
+      this.accountService.send('setBalance', {
+        fromAccount: createTransactionDto.fromAccount,
+        toAccount: createTransactionDto.toAccount,
+        amount: createTransactionDto.amount,
+      })
+    );
+    console.log(setBalance);
+
     return await newTrans;
   }
   async createAbine(createTransactionDto: CreateTransactionDto) {

@@ -20,4 +20,5 @@ export class CreateAccountDto {
     example: '1234567890',
   })
   accountNumber: string;
+  status: string;
 }

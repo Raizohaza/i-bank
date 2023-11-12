@@ -9,7 +9,7 @@ import { CreateAccountDto } from './dto/create-account.dto';
 export class AccountController {
   private readonly logger: Logger = new Logger(AccountController.name);
   constructor(private readonly accountService: AccountService) {}
-  @MessagePattern('account_create')
+  @MessagePattern('accountCreate')
   async create(@Payload() createAccountDto: CreateAccountDto) {
     const result = await this.accountService
       .create(createAccountDto)
@@ -71,5 +71,28 @@ export class AccountController {
   @MessagePattern('removeAccount')
   async remove(@Payload() id: string) {
     return await this.accountService.remove(id);
+  }
+
+  @MessagePattern('closeAccount')
+  async closeAccount(@Payload() id: string) {
+    const result = await this.accountService.updateStatus(id, 'INACTIVE');
+    return result;
+  }
+
+  @MessagePattern('checkBalance')
+  async checkBalance(@Payload() data: { acountId: string; amount: number }) {
+    const result = await this.accountService.checkBalance(
+      data.acountId,
+      data.amount
+    );
+    return result;
+  }
+
+  @MessagePattern('setBalance')
+  async setBalance(
+    @Payload() data: { fromAccount: string; toAccount: string; amount: number }
+  ) {
+    const result = await this.accountService.setBalance(data);
+    return result;
   }
 }

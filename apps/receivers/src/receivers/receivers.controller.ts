@@ -18,6 +18,11 @@ export class ReceiversController {
     return this.receiversService.findAll();
   }
 
+  @MessagePattern('findAllReceiversByCustomerId')
+  findAllByCustomerId(@Payload() id: string) {
+    return this.receiversService.findAllByCustomerId(id);
+  }
+
   @MessagePattern('findOneReceiver')
   findOne(@Payload() id: string) {
     return this.receiversService.findOne(id);

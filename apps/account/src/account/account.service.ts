@@ -93,8 +93,45 @@ export class AccountService {
       updateAccountDto
     );
   }
-
+  async updateStatus(id: string, status: string) {
+    return await this.accountModel.findOneAndUpdate({ _id: id }, { status });
+  }
   async remove(id: string) {
     return await this.accountModel.deleteOne({ _id: id });
+  }
+
+  async checkBalance(acountId: string, amount: number) {
+    const account = await this.accountModel.findOne({ _id: acountId });
+    if (account?.balance < amount) return false;
+    return true;
+  }
+
+  async setBalance(data: {
+    fromAccount: string;
+    toAccount: string;
+    amount: number;
+  }) {
+    const fromAccount = await this.accountModel.findOne({
+      _id: data.fromAccount,
+    });
+    const toAccount = await this.accountModel.findOne({ _id: data.toAccount });
+
+    fromAccount.balance -= data.amount;
+    toAccount.balance += data.amount;
+    console.log({ data, fromAccount, toAccount });
+
+    const result = await Promise.all([
+      this.accountModel.findOneAndUpdate(
+        { _id: data.fromAccount },
+        { balance: fromAccount.balance }
+      ),
+      this.accountModel.findOneAndUpdate(
+        { _id: data.toAccount },
+        { balance: toAccount.balance }
+      ),
+    ]);
+    console.log(result);
+
+    return result;
   }
 }

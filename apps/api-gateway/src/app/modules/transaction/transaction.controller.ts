@@ -8,6 +8,7 @@ import {
   Delete,
   Inject,
   Req,
+  BadRequestException,
 } from '@nestjs/common';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
@@ -41,17 +42,21 @@ export class TransactionController {
     }
     if (!createTransactionDto.fromName)
       createTransactionDto.fromName = customer.name;
-    console.log({ customer, createTransactionDto });
     // return true;
     return lastValueFrom(
       this.transactionService.send('createTransaction', createTransactionDto)
-    ).then((respone) => {
-      return <BaseReponse>{
-        status: HttpStatus.CREATED,
-        message: 'success',
-        data: respone,
-      };
-    });
+    )
+      .then((respone) => {
+        return <BaseReponse>{
+          status: HttpStatus.CREATED,
+          message: 'success',
+          data: respone,
+        };
+      })
+      .catch((e) => {
+        console.log(e);
+        throw new BadRequestException('Not enough balance remain');
+      });
   }
 
   @Get()

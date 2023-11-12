@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { TransactionSchema } from './entities/transaction.entity';
 import { MongoConfigService } from '../config/mongo-config.service';
 import { ConfigService } from '../config/config.service';
+import { ClientProxyFactory } from '@nestjs/microservices';
 
 @Module({
   imports: [
@@ -21,6 +22,16 @@ import { ConfigService } from '../config/config.service';
     ]),
   ],
   controllers: [TransactionController],
-  providers: [ConfigService, TransactionService],
+  providers: [
+    ConfigService,
+    TransactionService,
+    {
+      provide: 'ACCOUNT_SERVICE',
+      useFactory: (configService: ConfigService) => {
+        return ClientProxyFactory.create(configService.get('accountService'));
+      },
+      inject: [ConfigService],
+    },
+  ],
 })
 export class TransactionModule {}

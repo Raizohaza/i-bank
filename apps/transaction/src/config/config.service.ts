@@ -15,6 +15,12 @@ export class ConfigService {
       },
       transport: Transport.TCP,
     };
+    this.envConfig.accountService = {
+      options: {
+        port: parseInt(process.env.PORT, 10) || 3005,
+      },
+      transport: Transport.TCP,
+    };
   }
 
   get(key: string): unknown {

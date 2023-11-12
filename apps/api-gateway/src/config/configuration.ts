@@ -7,7 +7,6 @@ export class ConfigService {
     this.envConfig.port = parseInt(process.env.PORT, 10) || 3000;
     this.envConfig['X_SECRET'] = process.env['X_SECRET'] || 'abc';
     this.envConfig.SECRET_KEY = process.env.SECRET_KEY;
-    console.log(process.env['X_SECRET']);
     this.envConfig.customerService = {
       transport: Transport.TCP,
       options: {
@@ -34,7 +33,7 @@ export class ConfigService {
     };
     this.envConfig.receiverService = {
       options: {
-       // host: '127.0.0.1',
+        // host: '127.0.0.1',
         port: parseInt(process.env.PORT, 10) || 3006,
       },
       transport: Transport.TCP,
