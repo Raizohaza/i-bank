@@ -54,6 +54,11 @@ export class AccountController {
   remoteFindByAccountNumber(@Payload() accountNum: string) {
     return this.accountService.remoteFindByAccountNumber(accountNum);
   }
+
+  @MessagePattern('findByAccountNumber')
+  findByAccountNumber(@Payload() accountNum: string) {
+    return this.accountService.findByAccountNumber(accountNum);
+  }
   @MessagePattern('updateAccount')
   async update(@Payload() updateAccountDto: UpdateAccountDto) {
     const result = await this.accountService.update(

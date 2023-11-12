@@ -9,6 +9,7 @@ import {
   Post,
   Req,
   Patch,
+  HttpStatus,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { ApiTags, ApiBearerAuth, ApiOkResponse } from '@nestjs/swagger';
@@ -23,8 +24,8 @@ import { IServiceAccount } from './service-account.interface';
 import { IAuthorizedRequest } from '../../interfaces/common/authorized-request.interface';
 import { BaseReponse } from '../../interfaces/common/base-reponse.dto';
 @ApiBearerAuth()
-@Controller('acount')
-@ApiTags('acounts')
+@Controller('account')
+@ApiTags('accounts')
 export class AccountController {
   private readonly logger = new Logger(AccountController.name);
   constructor(
@@ -49,6 +50,42 @@ export class AccountController {
       data: accountResponse.data,
     };
   }
+  @Get(':customerId')
+  @Authorization(true)
+  @ApiOkResponse({
+    type: GetByUserIdResponse,
+  })
+  async GetByUserIdV2(
+    @Param('customerId') id: string
+  ): Promise<GetByUserIdResponse> {
+    const accountResponse: IServiceAccount = await firstValueFrom(
+      this.accountService.send('account_get_by_user_id', id)
+    );
+    return <GetByUserIdResponse>{
+      status: accountResponse.status,
+      message: accountResponse.message,
+      data: accountResponse.data,
+    };
+  }
+  @Get('findByAccountNumber/:accountNum')
+  @Authorization(true)
+  @ApiOkResponse({
+    type: GetByUserIdResponse,
+  })
+  async findByAccountNumber(
+    @Req() request: IAuthorizedRequest,
+    @Param('accountNum') accountNum: string
+  ): Promise<GetByUserIdResponse> {
+    const accountResponse = await firstValueFrom(
+      this.accountService.send('findByAccountNumber', accountNum)
+    );
+    return <GetByUserIdResponse>{
+      status: HttpStatus.OK,
+      message: 'success',
+      data: accountResponse,
+    };
+  }
+
   @Post()
   @Authorization(true)
   @ApiOkResponse({
@@ -84,7 +121,7 @@ export class AccountController {
     );
     return <UpdateAccountReponseDto>{
       message: accountResponse.message,
-      data: accountResponse.data,
+      data: accountResponse,
     };
   }
   @Delete(':id')

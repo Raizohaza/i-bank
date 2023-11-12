@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiHideProperty } from '@nestjs/swagger';
 
 export class CreateTransactionDto {
   @ApiProperty({
@@ -6,24 +6,17 @@ export class CreateTransactionDto {
   })
   customerId: string;
   @ApiProperty({
-    example: '6390aba8cbca1ab1879a96d8',
-  })
-  fromAccount: string;
-  @ApiProperty({
-    example: 'A',
-  })
-  fromName: string;
-  @ApiProperty({
     example: '638f00e407c33e2de2948525',
   })
+  fromAccount: string;
+  @ApiHideProperty()
+  fromName?: string;
+  @ApiProperty({
+    example: '6390aba8cbca1ab1879a96d8',
+  })
   toAccount: string;
-  @ApiProperty({
-    example: 'B',
-  })
   toName: string;
-  @ApiProperty({
-    example: 'ObjectIdEmp',
-  })
+  @ApiHideProperty()
   tellerEmpployeeId?: string;
   @ApiProperty({
     example: 50_000,
@@ -46,17 +39,4 @@ export class CreateTransactionDto {
     example: 'Tranfer desctiption',
   })
   contentTransaction: string;
-  @ApiProperty({
-    example: new Date(),
-  })
-  registerDay?: Date;
-  @ApiProperty({
-    example: 'ObjectId',
-  })
-  //token
-  OTPToken?: string;
-  @ApiProperty({
-    example: 'ObjectId',
-  })
-  OTPVerify?: boolean;
 }

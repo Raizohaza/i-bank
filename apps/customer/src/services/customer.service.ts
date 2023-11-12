@@ -1,10 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import { ConfigService } from './config/config.service';
 import { ICustomer } from '../interfaces/customer.interface';
 import { ICustomerLink } from '../interfaces/customer-link.interface';
+import { ClientProxy } from '@nestjs/microservices';
+import { lastValueFrom } from 'rxjs';
+import { CreateAccountDto } from '../dto/create-account.dto';
 
 @Injectable()
 export class CustomerService {
@@ -12,6 +15,8 @@ export class CustomerService {
     @InjectModel('Customer') private readonly customerModel: Model<ICustomer>,
     @InjectModel('CustomerLink')
     private readonly customerLinkModel: Model<ICustomerLink>,
+    @Inject('ACCOUNT_SERVICE')
+    private readonly accountService: ClientProxy,
     private readonly configService: ConfigService
   ) {}
 
@@ -59,5 +64,17 @@ export class CustomerService {
     return `${this.configService.get('baseUri')}:${this.configService.get(
       'gatewayPort'
     )}/customers/confirm/${link}`;
+  }
+  async createAccount(data: ICustomer) {
+    const account = new CreateAccountDto();
+    account.accountNumber = Date.now().toString();
+    account.balance = 0;
+    account.customerId = data.id;
+    account.type = 'PAYROLL';
+
+    const newAccount = await lastValueFrom(
+      this.accountService.send('account_create', account)
+    );
+    return newAccount;
   }
 }

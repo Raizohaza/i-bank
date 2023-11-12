@@ -11,7 +11,7 @@ export class ConfigService {
     this.envConfig.gatewayPort = process.env.API_GATEWAY_PORT;
     this.envConfig.accountService = {
       options: {
-        port: process.env.ACOUNT_SERVICE_PORT || 3005,
+        port: process.env.ACCOUNT_SERVICE_PORT || 3005,
       },
       transport: Transport.TCP,
     };

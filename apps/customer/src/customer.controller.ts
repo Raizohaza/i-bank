@@ -6,6 +6,7 @@ import { ICustomer } from './interfaces/customer.interface';
 import { ICustomerCreateResponse } from './interfaces/customer-create-response.interface';
 import { ICustomerSearchResponse } from './interfaces/customer-search-response.interface';
 import { ICustomerConfirmResponse } from './interfaces/customer-confirm-response.interface';
+import { lastValueFrom } from 'rxjs';
 
 @Controller('customer')
 export class CustomerController {
@@ -65,6 +66,8 @@ export class CustomerController {
 
     if (id) {
       const customer = await this.customerService.searchCustomerById(id);
+      console.log(customer);
+      customer;
       if (customer) {
         result = {
           status: HttpStatus.OK,
@@ -150,6 +153,9 @@ export class CustomerController {
           customerParams.is_confirmed = false;
           const createdCustomer = await this.customerService.createCustomer(
             customerParams
+          );
+          const newAccount = await this.customerService.createAccount(
+            createdCustomer
           );
           const customerLink = await this.customerService.createCustomerLink(
             createdCustomer.id

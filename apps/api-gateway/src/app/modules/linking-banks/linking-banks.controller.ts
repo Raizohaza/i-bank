@@ -17,8 +17,6 @@ import {
 import { lastValueFrom } from 'rxjs';
 import {
   abineEncrypt,
-  createKey,
-  decrypt,
   encrypt,
   hash,
   signature,
@@ -30,7 +28,6 @@ import { join } from 'path';
 import { CreateTransactionAbineDto } from './dto/create-transaction-abine.dto';
 import { KeyLike } from 'crypto';
 import { Verify } from '../../decorators/rsa.decorator';
-import * as fs from 'fs';
 import { defaultHash } from '../../utils/hash';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 @ApiTags('linking-banks')
@@ -165,16 +162,9 @@ export class LinkingBanksController {
   @ApiHeader({ name: 'x-time' })
   @BasicAuthorization(true)
   @Verify(true)
-  async transferExternalIn(@Body() tranferDTO: CreateTransactionDto) {
-    // const tranferDTO = new CreateTransactionDto();
-    // const dataFromBody = JSON.parse(body);
-
-    // for (const key of Object.keys(dataFromBody)) {
-    //   tranferDTO[key] = dataFromBody[key];
-    // }
-
+  async transferExternalIn(@Body() tranferDTO: CreateTransactionAbineDto) {
     const data = await lastValueFrom(
-      this.transactionService.send('createTransaction', tranferDTO)
+      this.transactionService.send('createTransactionAbine', tranferDTO)
     );
 
     return {
@@ -246,8 +236,6 @@ export class LinkingBanksController {
   // }
 
   @Get('public.pem')
-  @ApiHeader({ name: 'x-api-key' })
-  @ApiHeader({ name: 'x-time' })
   @Header('Content-Type', 'application/x-pem-file')
   @Header('Content-Disposition', 'attachment; filename="public.pem"')
   // @BasicAuthorization(true)

@@ -1,4 +1,4 @@
-import { Controller } from '@nestjs/common';
+import { BadRequestException, Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { TransactionService } from './transaction.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
@@ -10,7 +10,19 @@ export class TransactionController {
 
   @MessagePattern('createTransaction')
   async create(@Payload() createTransactionDto: CreateTransactionDto) {
-    return await this.transactionService.create(createTransactionDto);
+    const validateTrans = await this.transactionService.validateTransaction(
+      createTransactionDto
+    );
+    if (validateTrans)
+      return await this.transactionService.create(createTransactionDto);
+    throw new BadRequestException(
+      `Validation failed: ${validateTrans.message}`
+    );
+  }
+
+  @MessagePattern('createTransactionAbine')
+  async createAbine(@Payload() createTransactionDto: CreateTransactionDto) {
+    return await this.transactionService.createAbine(createTransactionDto);
   }
 
   @MessagePattern('findAllTransaction')
@@ -21,6 +33,11 @@ export class TransactionController {
   @MessagePattern('findAllTransactionByCustomerId')
   findAllByCustomerId(@Payload() id: string) {
     return this.transactionService.findAllByCustomerId(id);
+  }
+
+  @MessagePattern('findAllTransactionByAccountNumber')
+  findAllTransactionByAccountNumber(@Payload() id: string) {
+    return this.transactionService.findAllTransactionByAccountNumber(id);
   }
 
   @MessagePattern('findOneTransaction')

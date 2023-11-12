@@ -10,26 +10,39 @@ export class TransactionService {
   constructor(
     @InjectModel('Transaction') private readonly model: Model<ITransaction>
   ) {}
+  async validateTransaction(createTransactionDto: CreateTransactionDto) {
+    return {
+      message: 'Success',
+    };
+  }
   async create(createTransactionDto: CreateTransactionDto) {
-    const data = new CreateTransactionDto();
+    console.log({ createTransactionDto });
+    const newTrans = await this.model.create(createTransactionDto);
+    console.log(newTrans);
+    return await newTrans;
+  }
+  async createAbine(createTransactionDto: CreateTransactionDto) {
     const keys = JSON.parse(JSON.stringify(createTransactionDto));
     console.log(keys);
-
-    // for (const key of keys) {
-    //   data[key] = createTransactionDto[key];
-    // }
-    console.log({ data });
     const newTrans = await this.model.create(createTransactionDto);
     console.log(newTrans);
 
     return await newTrans;
   }
-
-  findAll() {
-    return `This action returns all transaction`;
+  async findAll() {
+    return await this.model.find({}).lean();
   }
   async findAllByCustomerId(id) {
     const data = await this.model.find({ customerId: id }).lean();
+    console.log(data);
+    return data;
+  }
+  async findAllTransactionByAccountNumber(accountNumber) {
+    const data = await this.model
+      .find({
+        $or: [{ fromAccount: accountNumber }, { toAccount: accountNumber }],
+      })
+      .lean();
     console.log(data);
     return data;
   }

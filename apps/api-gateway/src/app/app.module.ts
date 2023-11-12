@@ -11,6 +11,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthGuard } from './guards/authorization.guard';
 import { PermissionGuard } from './guards/permission.guard';
+import { RolesGuard } from './guards/roles.guard';
 import { RsaGuard } from './guards/rsa.guard';
 import { LoggerMiddleware } from './middlewares/logger.middleware';
 import { RpcServicesModule } from './modules/RpcServices.module';
@@ -67,6 +68,10 @@ import { RpcServicesModule } from './modules/RpcServices.module';
     {
       provide: APP_GUARD,
       useClass: RsaGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
     },
   ],
 })

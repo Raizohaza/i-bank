@@ -38,6 +38,13 @@ import { CustomerLinkSchema } from './schemas/customer-link.schema';
       },
       inject: [ConfigService],
     },
+    {
+      provide: 'ACCOUNT_SERVICE',
+      useFactory: (configService: ConfigService) => {
+        return ClientProxyFactory.create(configService.get('accountService'));
+      },
+      inject: [ConfigService],
+    },
   ],
 })
 export class CustomerModule {}

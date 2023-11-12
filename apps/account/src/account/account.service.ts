@@ -51,6 +51,35 @@ export class AccountService {
     console.log(data);
     return data;
   }
+  async findByAccountNumber(accountNum: string) {
+    console.log(accountNum);
+    const data = await this.accountModel.aggregate([
+      { $match: { accountNumber: accountNum } },
+      {
+        $lookup: {
+          from: 'customers',
+          localField: 'customerId',
+          foreignField: '_id',
+          as: 'customers',
+        },
+      },
+      {
+        $unwind: {
+          path: '$customers',
+          preserveNullAndEmptyArrays: false,
+        },
+      },
+      {
+        $project: {
+          email: '$customers.email',
+          name: '$customers.name',
+          accountNumber: 1,
+        },
+      },
+    ]);
+    console.log(data);
+    return data;
+  }
   async findOne(id: string) {
     return await this.accountModel.findById(id);
   }

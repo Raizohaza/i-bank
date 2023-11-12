@@ -6,6 +6,7 @@ export interface ICustomer extends Document {
   name: string;
   password: string;
   is_confirmed: boolean;
+  type?: string;
   compareEncryptedPassword: (password: string) => boolean;
   getEncryptedPassword: (password: string) => string;
 }

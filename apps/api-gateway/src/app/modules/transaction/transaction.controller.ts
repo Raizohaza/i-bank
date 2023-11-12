@@ -19,6 +19,8 @@ import { IAuthorizedRequest } from '../../interfaces/common/authorized-request.i
 import { IServiceAccount } from '../account/service-account.interface';
 import { BaseReponse } from '../../interfaces/common/base-reponse.dto';
 import { HttpStatus } from '@nestjs/common/enums';
+import { Request } from 'express';
+import { ICustomer } from '../customer';
 @ApiBearerAuth()
 @ApiTags('transaction')
 @Controller('transaction')
@@ -32,7 +34,15 @@ export class TransactionController {
 
   @Post()
   @Authorization(true)
-  create(@Body() createTransactionDto: CreateTransactionDto) {
+  create(@Body() createTransactionDto: CreateTransactionDto, @Req() req) {
+    const customer: ICustomer = req.customer;
+    if (!createTransactionDto.customerId) {
+      createTransactionDto.customerId = customer.id;
+    }
+    if (!createTransactionDto.fromName)
+      createTransactionDto.fromName = customer.name;
+    console.log({ customer, createTransactionDto });
+    // return true;
     return lastValueFrom(
       this.transactionService.send('createTransaction', createTransactionDto)
     ).then((respone) => {
@@ -51,16 +61,38 @@ export class TransactionController {
       this.transactionService.send('findAllTransaction', {})
     );
   }
-  @Get('byCustomerId')
+  @Get('byCustomerId/:customerId')
   @Authorization(true)
   async GetAllByCustomerId(
-    @Req() request: IAuthorizedRequest
+    // @Req() request: IAuthorizedRequest
+    @Param('customerId') customerId: string
   ): Promise<BaseReponse> {
-    const customer = request.customer;
+    // const customer = request.customer;
+    console.log(customerId);
+
+    const response: IServiceAccount = await firstValueFrom(
+      this.transactionService.send('findAllTransactionByCustomerId', customerId)
+    );
+
+    return <BaseReponse>{
+      status: HttpStatus.OK,
+      message: 'success',
+      data: response,
+    };
+  }
+  @Get('byAccountNumber/:accountNumber')
+  @Authorization(true)
+  async GetAllByAccountNumber(
+    // @Req() request: IAuthorizedRequest
+    @Param('accountNumber') accountNumber: string
+  ): Promise<BaseReponse> {
+    // const customer = request.customer;
+    console.log(accountNumber);
+
     const response: IServiceAccount = await firstValueFrom(
       this.transactionService.send(
-        'findAllTransactionByCustomerId',
-        customer.id
+        'findAllTransactionByAccountNumber',
+        accountNumber
       )
     );
 

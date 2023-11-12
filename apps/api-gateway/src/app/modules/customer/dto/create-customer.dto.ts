@@ -16,4 +16,5 @@ export class CreateCustomerDto {
     example: 'username',
   })
   name: string;
+  type = 'customer';
 }

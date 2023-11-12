@@ -20,6 +20,8 @@ import {
 } from '@nestjs/swagger';
 import { firstValueFrom, lastValueFrom } from 'rxjs';
 import { Authorization } from '../../decorators/authorization.decorator';
+import { Roles } from '../../decorators/roles.decorator';
+import { Role } from '../../enums/role.enum';
 import { IAuthorizedRequest } from '../../interfaces/common/authorized-request.interface';
 import {
   IServiveTokenCreateResponse,
@@ -92,6 +94,8 @@ export class CustomerController {
   }
 
   @Post()
+  // @Authorization(true)
+  // @Roles(Role.Admin, Role.Employee)
   @ApiCreatedResponse({
     type: CreateCustomerResponseDto,
   })
