@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ClientProxyFactory } from '@nestjs/microservices';
-import { ConfigService } from '../../config/configuration';
+import { ConfigService } from 'libs/utils/src/config/configuration';
 import { ReceiverController } from './receiver/receiver.controller';
 import { CustomerController } from './customer/customer.controller';
 import { AccountController } from './account/account.controller';

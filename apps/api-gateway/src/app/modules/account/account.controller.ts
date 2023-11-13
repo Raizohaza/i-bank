@@ -124,6 +124,22 @@ export class AccountController {
       data: accountResponse,
     };
   }
+
+  @Patch('closeAccount/:id')
+  @Authorization(true)
+  @ApiOkResponse({
+    type: CreateAccountReponseDto,
+  })
+  async closeAccount(@Param('id') id: string) {
+    const accountResponse: IServiceAccount = await firstValueFrom(
+      this.accountService.send('closeAccount', id)
+    );
+    return <UpdateAccountReponseDto>{
+      message: accountResponse.message,
+      data: accountResponse,
+    };
+  }
+
   @Delete(':id')
   @Authorization(true)
   @ApiOkResponse({

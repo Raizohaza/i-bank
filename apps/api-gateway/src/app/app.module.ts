@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { ClientProxyFactory } from '@nestjs/microservices';
-import { ConfigService } from '../config/configuration';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthGuard } from './guards/authorization.guard';
@@ -15,13 +14,17 @@ import { RolesGuard } from './guards/roles.guard';
 import { RsaGuard } from './guards/rsa.guard';
 import { LoggerMiddleware } from './middlewares/logger.middleware';
 import { RpcServicesModule } from './modules/RpcServices.module';
+import { UtilsModule } from '@i-bank/utils';
+import { ConfigService } from 'libs/utils/src/config/configuration';
+import { SendgridService } from 'libs/utils/src/lib/sendgrid.service';
 
 @Module({
-  imports: [ConfigService, RpcServicesModule],
+  imports: [ConfigService, RpcServicesModule, UtilsModule],
   controllers: [AppController],
   providers: [
     AppService,
     ConfigService,
+    SendgridService,
     {
       provide: 'CUSTOMER_SERVICE',
       useFactory: (configService: ConfigService) => {

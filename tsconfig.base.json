@@ -16,6 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "@i-bank/shared": ["libs/shared/src/index.ts"],
+      "@i-bank/utils": ["libs/utils/src/index.ts"],
       "@lib/shared/dto": ["libs/shared/src/lib/dto/index.ts"]
     }
   },

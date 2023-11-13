@@ -9,7 +9,7 @@ import { firstValueFrom } from 'rxjs';
 import { Reflector } from '@nestjs/core';
 import { ClientProxy } from '@nestjs/microservices';
 import * as crypto from 'crypto';
-import { ConfigService } from '../../config/configuration';
+import { ConfigService } from 'libs/utils/src/config/configuration';
 import {
   BadRequestException,
   UnauthorizedException,

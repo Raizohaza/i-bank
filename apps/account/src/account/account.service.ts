@@ -74,11 +74,12 @@ export class AccountService {
           email: '$customers.email',
           name: '$customers.name',
           accountNumber: 1,
+          type: 1,
         },
       },
     ]);
     console.log(data);
-    return data;
+    return data[0];
   }
   async findOne(id: string) {
     return await this.accountModel.findById(id);
