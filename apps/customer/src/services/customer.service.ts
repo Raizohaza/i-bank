@@ -63,7 +63,7 @@ export class CustomerService {
   public getConfirmationLink(link: string): string {
     return `${this.configService.get('baseUri')}:${this.configService.get(
       'gatewayPort'
-    )}/customers/confirm/${link}`;
+    )}/customer/confirm/${link}`;
   }
   async createAccount(data: ICustomer) {
     const account = new CreateAccountDto();

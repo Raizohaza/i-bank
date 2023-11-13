@@ -119,10 +119,9 @@ export class AccountController {
     const accountResponse: IServiceAccount = await firstValueFrom(
       this.accountService.send('updateAccount', body)
     );
-    return <UpdateAccountReponseDto>{
-      message: accountResponse.message,
+    return new UpdateAccountReponseDto({
       data: accountResponse,
-    };
+    });
   }
 
   @Patch('closeAccount/:id')

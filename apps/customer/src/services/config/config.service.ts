@@ -7,8 +7,8 @@ export class ConfigService {
     this.envConfig = {
       port: process.env.CUSTOMER_SERVICE_PORT,
     };
-    this.envConfig.baseUri = process.env.BASE_URI;
-    this.envConfig.gatewayPort = process.env.API_GATEWAY_PORT;
+    this.envConfig.baseUri = process.env.baseUri || 'http://localhost';
+    this.envConfig.gatewayPort = process.env.gatewayPort || 3333;
     this.envConfig.mailerService = {
       options: {
         port: process.env.MAILER_SERVICE_PORT,

@@ -12,7 +12,7 @@ import { lastValueFrom } from 'rxjs';
 export class CustomerController {
   constructor(
     private readonly customerService: CustomerService,
-    @Inject('MAILER_SERVICE') private readonly mailerServiceClient: ClientProxy
+    @Inject('MAILER_SERVICE') private readonly mailerServiceClient
   ) {}
 
   @MessagePattern('customer_search_by_credentials')
@@ -166,17 +166,24 @@ export class CustomerController {
             message: 'customer_create_success',
             data: createdCustomer,
           };
-          this.mailerServiceClient.send('mail_send', {
+          const confirmLink = this.customerService.getConfirmationLink(
+            customerLink.link
+          );
+          console.log(confirmLink);
+
+          const mail = {
             to: createdCustomer.email,
             subject: 'Email confirmation',
+            from: 'laptrinhweb100@gmail.com',
             html: `<center>
-              <b>Hi there, please confirm your email to use Smoothday.</b><br>
-              Use the following link for this.<br>
-              <a href="${this.customerService.getConfirmationLink(
-                customerLink.link
-              )}"><b>Confirm The Email</b></a>
-              </center>`,
-          });
+            <b>Hi ${createdCustomer.name}, please confirm your email to use iBank.</b>
+            <br>
+            Use the following link for this.
+            <br>
+            <a href="${confirmLink}"><b>Confirm The Email</b></a>
+            </center>`,
+          };
+          this.mailerServiceClient.send(mail);
         } catch (e) {
           result = {
             status: HttpStatus.PRECONDITION_FAILED,

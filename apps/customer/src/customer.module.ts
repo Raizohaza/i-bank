@@ -7,7 +7,8 @@ import { MongoConfigService } from './services/config/mongo-config.service';
 import { ConfigService } from './services/config/config.service';
 import { CustomerSchema } from './schemas/customer.schema';
 import { CustomerLinkSchema } from './schemas/customer-link.schema';
-
+import { SendgridService } from 'libs/utils/src/lib/sendgrid.service';
+import { UtilsModule } from '@i-bank/utils';
 @Module({
   imports: [
     MongooseModule.forRootAsync({
@@ -25,6 +26,7 @@ import { CustomerLinkSchema } from './schemas/customer-link.schema';
         collection: 'customer_links',
       },
     ]),
+    UtilsModule,
   ],
   controllers: [CustomerController],
   providers: [
@@ -32,11 +34,7 @@ import { CustomerLinkSchema } from './schemas/customer-link.schema';
     ConfigService,
     {
       provide: 'MAILER_SERVICE',
-      useFactory: (configService: ConfigService) => {
-        const mailerServiceOptions = configService.get('mailerService');
-        return ClientProxyFactory.create(mailerServiceOptions);
-      },
-      inject: [ConfigService],
+      useClass: SendgridService,
     },
     {
       provide: 'ACCOUNT_SERVICE',
