@@ -18,6 +18,7 @@ import { IAuthorizedRequest } from '../../interfaces/common/authorized-request.i
 import { firstValueFrom } from 'rxjs';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import mongoose from 'mongoose';
+import { CreateReceiverByAccountNumberDto } from './dto/create-receiver-by-accountf-number.dto';
 @ApiBearerAuth()
 @ApiTags('receiver')
 @Controller('receiver')
@@ -42,18 +43,38 @@ export class ReceiverController {
     return result;
   }
 
-  @Get('ByCustomerId')
+  @Post('createByAccountNumber')
+  @Authorization(true)
+  async createByAccountNumber(
+    @Body() createReceiverDto: CreateReceiverByAccountNumberDto,
+    @Req() request: IAuthorizedRequest
+  ) {
+    createReceiverDto.customerId = request.customer.id;
+    const result = await firstValueFrom(
+      this.receiverService.send('createByAccountNumber', createReceiverDto)
+    );
+    return result;
+  }
+
+  @Get('ByLoginCustomerId')
   @Authorization(true)
   async findAll(@Req() request: IAuthorizedRequest) {
     const result = await firstValueFrom(
       this.receiverService.send(
-        'findAllReceiversByCustomerId',
+        'findAllReceiversByLoginCustomerId',
         request.customer.id
       )
     );
     return result;
   }
-
+  @Get('ByCustomerId/:id')
+  @Authorization(true)
+  async findAllByCustomerId(@Param('id') id: string) {
+    const result = await firstValueFrom(
+      this.receiverService.send('findAllReceiversByCustomerId', id)
+    );
+    return result;
+  }
   @Get(':id')
   async findOne(@Req() request: IAuthorizedRequest, @Param('id') id: string) {
     const result = await firstValueFrom(

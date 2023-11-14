@@ -59,6 +59,38 @@ export class TransactionController {
       });
   }
 
+  @Post('createByAccountNumber')
+  @Authorization(true)
+  createByAccountNumber(
+    @Body() createTransactionDto: CreateTransactionDto,
+    @Req() req
+  ) {
+    const customer: ICustomer = req.customer;
+    if (!createTransactionDto.customerId) {
+      createTransactionDto.customerId = customer.id;
+    }
+    if (!createTransactionDto.fromName)
+      createTransactionDto.fromName = customer.name;
+    // return true;
+    return lastValueFrom(
+      this.transactionService.send(
+        'createTransactionByAccountNumber',
+        createTransactionDto
+      )
+    )
+      .then((respone) => {
+        return <BaseReponse>{
+          status: HttpStatus.CREATED,
+          message: 'success',
+          data: respone,
+        };
+      })
+      .catch((e) => {
+        console.log(e);
+        throw new BadRequestException('Not enough balance remain');
+      });
+  }
+
   @Get()
   @Authorization(true)
   findAll() {

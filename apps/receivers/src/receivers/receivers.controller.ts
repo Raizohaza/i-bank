@@ -12,17 +12,25 @@ export class ReceiversController {
   create(@Payload() createReceiverDto: CreateReceiverDto) {
     return this.receiversService.create(createReceiverDto);
   }
-
+  @MessagePattern('createByAccountNumber')
+  createByAccountNumber(@Payload() createReceiverDto: CreateReceiverDto) {
+    console.log('Receivers', createReceiverDto);
+    return this.receiversService.createByAccountNumber(createReceiverDto);
+  }
   @MessagePattern('findAllReceivers')
   findAll() {
     return this.receiversService.findAll();
+  }
+
+  @MessagePattern('findAllReceiversByLoginCustomerId')
+  findAllByLoginCustomerId(@Payload() id: string) {
+    return this.receiversService.findAllByLoginCustomerId(id);
   }
 
   @MessagePattern('findAllReceiversByCustomerId')
   findAllByCustomerId(@Payload() id: string) {
     return this.receiversService.findAllByCustomerId(id);
   }
-
   @MessagePattern('findOneReceiver')
   findOne(@Payload() id: string) {
     return this.receiversService.findOne(id);

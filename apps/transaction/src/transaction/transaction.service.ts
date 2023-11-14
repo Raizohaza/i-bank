@@ -13,6 +13,11 @@ export class TransactionService {
     @InjectModel('Transaction') private readonly model: Model<ITransaction>,
     @Inject('ACCOUNT_SERVICE') private readonly accountService: ClientProxy
   ) {}
+  async findByAccountNumber(accountNumber: string) {
+    return await lastValueFrom(
+      this.accountService.send('findByAccountNumber', accountNumber)
+    );
+  }
   async validateTransaction(createTransactionDto: CreateTransactionDto) {
     const checkBalance = await lastValueFrom(
       this.accountService.send('checkBalance', {
@@ -30,6 +35,7 @@ export class TransactionService {
       message: 'Success',
     };
   }
+
   async create(createTransactionDto: CreateTransactionDto) {
     const newTrans = await this.model.create(createTransactionDto);
     const setBalance = await lastValueFrom(

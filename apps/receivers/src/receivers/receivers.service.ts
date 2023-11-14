@@ -18,6 +18,9 @@ export class ReceiversService {
     const result = await lastValueFrom(
       this.accountService.send('findOneAccount', createReceiverDto.accountId)
     );
+    if (!result) {
+      return { message: 'Account ID is not existed!' };
+    }
     if (!createReceiverDto.remindName) {
       const data = await lastValueFrom(
         this.customerService.send('customer_get_by_id', result.customerId)
@@ -25,13 +28,38 @@ export class ReceiversService {
       console.log(data);
       createReceiverDto.remindName = data.customer.name;
     }
-    if (!result) {
-      return { message: 'Account ID is not existed!' };
-    }
+
     const newReceiver = new this.receiverModel(createReceiverDto);
     return await newReceiver.save();
   }
+  async createByAccountNumber(createReceiverDto: CreateReceiverDto) {
+    console.log(createReceiverDto);
 
+    const respone = await lastValueFrom(
+      this.accountService.send(
+        'findByAccountNumber',
+        createReceiverDto.accountNumber
+      )
+    );
+    const result = respone?.[0];
+    if (!result) {
+      return { message: 'Account Number is not existed!' };
+    }
+    if (!createReceiverDto?.accountId) {
+      createReceiverDto.accountId = result._id;
+    }
+    if (!createReceiverDto.remindName) {
+      const data = await lastValueFrom(
+        this.customerService.send('customer_get_by_id', result.customerId)
+      );
+      if (!data[0]) return { message: 'Account Number is not existed!' };
+      console.log(data[0]);
+      createReceiverDto.remindName = data[0].customer.name;
+    }
+
+    const newReceiver = new this.receiverModel(createReceiverDto);
+    return await newReceiver.save();
+  }
   async findAll() {
     // return await this.receiverModel.find();
     return await this.receiverModel.aggregate([
@@ -59,6 +87,37 @@ export class ReceiversService {
     ]);
   }
 
+  async findAllByLoginCustomerId(id: string) {
+    // return await this.receiverModel.find();
+    return await this.receiverModel.aggregate([
+      {
+        $match: {
+          customerId: id,
+        },
+      },
+      {
+        $lookup: {
+          from: 'Accounts',
+          localField: 'accountId',
+          foreignField: '_id',
+          as: 'accounts',
+        },
+      },
+      {
+        $unwind: {
+          path: '$accounts',
+          preserveNullAndEmptyArrays: false,
+        },
+      },
+      {
+        $project: {
+          remindName: 1,
+          accountId: 1,
+          accountNumber: '$accounts.accountNumber',
+        },
+      },
+    ]);
+  }
   async findAllByCustomerId(id: string) {
     // return await this.receiverModel.find();
     return await this.receiverModel.aggregate([
@@ -90,7 +149,6 @@ export class ReceiversService {
       },
     ]);
   }
-
   async findOne(id: string) {
     console.log(id);
     return await this.receiverModel.findById(id);

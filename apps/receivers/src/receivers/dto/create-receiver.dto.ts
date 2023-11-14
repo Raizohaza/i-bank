@@ -4,4 +4,5 @@ export class CreateReceiverDto implements IReceiver {
   accountId: string;
   remindName: string;
   customerId: string;
+  accountNumber?: string;
 }

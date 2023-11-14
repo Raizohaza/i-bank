@@ -81,6 +81,7 @@ export class AccountController {
 
   @MessagePattern('checkBalance')
   async checkBalance(@Payload() data: { acountId: string; amount: number }) {
+    console.log('check balance', { data });
     const result = await this.accountService.checkBalance(
       data.acountId,
       data.amount

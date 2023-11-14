@@ -32,6 +32,19 @@ export class AccountController {
     @Inject('ACCOUNT_SERVICE') private readonly accountService: ClientProxy
   ) {}
 
+  @Get('getAll')
+  @Authorization(true)
+  @ApiOkResponse({
+    type: GetByUserIdResponse,
+  })
+  async GetAll(): Promise<GetByUserIdResponse> {
+    const accountResponse: IServiceAccount = await firstValueFrom(
+      this.accountService.send('account_get_all', {})
+    );
+    const reponse = new BaseReponse();
+    reponse.data = accountResponse;
+    return reponse;
+  }
   @Get()
   @Authorization(true)
   @ApiOkResponse({

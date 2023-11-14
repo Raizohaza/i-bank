@@ -103,6 +103,8 @@ export class AccountService {
 
   async checkBalance(acountId: string, amount: number) {
     const account = await this.accountModel.findOne({ _id: acountId });
+    console.log({ amount, account });
+
     if (account?.balance < amount) return false;
     return true;
   }

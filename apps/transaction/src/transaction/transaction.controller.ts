@@ -8,6 +8,28 @@ import { UpdateTransactionDto } from './dto/update-transaction.dto';
 export class TransactionController {
   constructor(private readonly transactionService: TransactionService) {}
 
+  @MessagePattern('createTransactionByAccountNumber')
+  async createByAccountNumber(
+    @Payload() createTransactionDto: CreateTransactionDto
+  ) {
+    const fromAccount = await this.transactionService.findByAccountNumber(
+      createTransactionDto.fromAccount
+    );
+
+    const toAccount = await this.transactionService.findByAccountNumber(
+      createTransactionDto.toAccount
+    );
+    if (fromAccount) createTransactionDto.fromAccount = fromAccount._id;
+    if (toAccount) createTransactionDto.toAccount = toAccount._id;
+    const validateTrans = await this.transactionService.validateTransaction(
+      createTransactionDto
+    );
+    if (validateTrans.validated)
+      return await this.transactionService.create(createTransactionDto);
+    throw new BadRequestException(
+      `Validation failed: ${validateTrans.message}`
+    );
+  }
   @MessagePattern('createTransaction')
   async create(@Payload() createTransactionDto: CreateTransactionDto) {
     const validateTrans = await this.transactionService.validateTransaction(
