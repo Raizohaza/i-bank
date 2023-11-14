@@ -75,6 +75,7 @@ export class AccountService {
           name: '$customers.name',
           accountNumber: 1,
           type: 1,
+          customerId: '$customers._id',
         },
       },
     ]);

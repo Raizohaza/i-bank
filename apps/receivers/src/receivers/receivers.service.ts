@@ -35,13 +35,12 @@ export class ReceiversService {
   async createByAccountNumber(createReceiverDto: CreateReceiverDto) {
     console.log(createReceiverDto);
 
-    const respone = await lastValueFrom(
+    const result = await lastValueFrom(
       this.accountService.send(
         'findByAccountNumber',
         createReceiverDto.accountNumber
       )
     );
-    const result = respone?.[0];
     if (!result) {
       return { message: 'Account Number is not existed!' };
     }
@@ -49,12 +48,12 @@ export class ReceiversService {
       createReceiverDto.accountId = result._id;
     }
     if (!createReceiverDto.remindName) {
-      const data = await lastValueFrom(
+      const response = await lastValueFrom(
         this.customerService.send('customer_get_by_id', result.customerId)
       );
-      if (!data[0]) return { message: 'Account Number is not existed!' };
-      console.log(data[0]);
-      createReceiverDto.remindName = data[0].customer.name;
+      if (!response) return { message: 'Account Number is not existed!' };
+      console.log({ response });
+      createReceiverDto.remindName = response.data.name;
     }
 
     const newReceiver = new this.receiverModel(createReceiverDto);
