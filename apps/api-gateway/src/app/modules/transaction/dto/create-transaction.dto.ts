@@ -39,4 +39,8 @@ export class CreateTransactionDto {
     example: 'Tranfer desctiption',
   })
   contentTransaction: string;
+  @ApiHideProperty()
+  OTPToken: string;
+  @ApiHideProperty()
+  OTPVerify: boolean;
 }

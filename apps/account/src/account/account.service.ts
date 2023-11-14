@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { UpdateAccountDto } from './dto/update-account.dto';
 import { IAccount } from './interfaces/account.interface';
@@ -96,7 +96,10 @@ export class AccountService {
     );
   }
   async updateStatus(id: string, status: string) {
-    return await this.accountModel.findOneAndUpdate({ _id: id }, { status });
+    return await this.accountModel.findOneAndUpdate(
+      { _id: id },
+      { status: status }
+    );
   }
   async remove(id: string) {
     return await this.accountModel.deleteOne({ _id: id });
@@ -137,5 +140,35 @@ export class AccountService {
     console.log(result);
 
     return result;
+  }
+  async setBalanceAbine(data: {
+    fromAccount: string;
+    toAccount: string;
+    amount: number;
+  }) {
+    if (mongoose.isValidObjectId(data.fromAccount)) {
+      const fromAccount = await this.accountModel.findOne({
+        _id: data.fromAccount,
+      });
+
+      fromAccount.balance -= data.amount;
+      return await this.accountModel.findOneAndUpdate(
+        { _id: data.fromAccount },
+        { balance: fromAccount.balance }
+      );
+    }
+
+    if (mongoose.isValidObjectId(data.toAccount)) {
+      const toAccount = await this.accountModel.findOne({
+        _id: data.toAccount,
+      });
+      toAccount.balance += data.amount;
+      return await this.accountModel.findOneAndUpdate(
+        { _id: data.toAccount },
+        { balance: toAccount.balance }
+      );
+    }
+
+    return false;
   }
 }

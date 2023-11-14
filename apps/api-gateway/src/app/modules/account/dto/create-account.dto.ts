@@ -19,6 +19,7 @@ export class CreateAccountDto {
   @ApiProperty({
     minLength: 10,
     example: '1671552887',
+    default: Date.now(),
   })
-  accountNumber = new Date().getTime().toString().slice(0, 10);
+  accountNumber = new Date().getTime().toString();
 }

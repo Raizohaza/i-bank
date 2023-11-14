@@ -5,11 +5,12 @@ import {
   Body,
   Param,
   StreamableFile,
+  BadRequestException,
 } from '@nestjs/common';
 import { CreateLinkingBankDto } from './dto/create-linking-bank.dto';
-import { Header, Inject } from '@nestjs/common/decorators';
+import { Header, Inject, Patch, Req } from '@nestjs/common/decorators';
 import { ClientProxy } from '@nestjs/microservices';
-import { ApiHeader, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
 import {
   Authorization,
   BasicAuthorization,
@@ -29,7 +30,13 @@ import { CreateTransactionAbineDto } from './dto/create-transaction-abine.dto';
 import { KeyLike } from 'crypto';
 import { Verify } from '../../decorators/rsa.decorator';
 import { defaultHash } from '../../utils/hash';
-import { CreateTransactionDto } from './dto/create-transaction.dto';
+import { ICustomer } from './dto/customer.interface';
+import * as SendGrid from '@sendgrid/mail';
+import { UpdateBalanceDto } from './dto/update-balance.dto';
+import { BaseReponse } from '../../interfaces/common/base-reponse.dto';
+import mongoose from 'mongoose';
+import { CreateReceiverDto } from './dto/create-receiver.dto';
+
 @ApiTags('linking-banks')
 @Controller('linking-banks')
 export class LinkingBanksController {
@@ -38,6 +45,8 @@ export class LinkingBanksController {
     private readonly linkingBanksService: ClientProxy,
     @Inject('TRANSACTION_SERVICE')
     private readonly transactionService: ClientProxy,
+    @Inject('MAILER_SERVICE') private readonly mailerService,
+    @Inject('RECEIVER_SERVICE') private readonly receiverService: ClientProxy,
     @Inject('CONFIG_SERVICE')
     private config: ConfigService
   ) {}
@@ -101,14 +110,17 @@ export class LinkingBanksController {
     };
     return getAccountInfo();
   }
-
+  @ApiBearerAuth()
   @Post('external/transfer/out')
-  // @BasicAuthorization(true)
-  async transferExternalOut(@Body() tranferDTO: CreateTransactionAbineDto) {
+  @Authorization(true)
+  async transferExternalOut(
+    @Body() tranferDTO: CreateTransactionAbineDto,
+    @Req() req
+  ) {
     const HOME = 'https://abine.fly.dev';
     const TRANSFER = '/api/external/transfer';
     const now = Date.now().toString();
-    const feePayer: 'SENDER' | 'RECIPIENT' = 'RECIPIENT';
+    const feePayer: 'SENDER' | 'RECIPIENT' = 'SENDER';
     const fetchData = await fetch(HOME + '/public.pem');
     const publicKey: KeyLike = await fetchData.text();
     const sign = signature(
@@ -143,6 +155,7 @@ export class LinkingBanksController {
       },
       body: JSON.stringify({ ...encryptedData }),
     });
+    const newTrans = await this.createTransaction(tranferDTO, req);
 
     const res = await fetch(HOME + TRANSFER, {
       method: 'POST',
@@ -153,8 +166,80 @@ export class LinkingBanksController {
       },
       body: JSON.stringify({ ...encryptedData }),
     });
+    console.log(res);
 
-    return res.json();
+    const remoteRequest = res.json();
+    const respone = new BaseReponse();
+    respone.data = {
+      newTrans,
+      remoteRequest,
+    };
+    return respone;
+  }
+  async createTransaction(tranferDTO: CreateTransactionAbineDto, req) {
+    const customer: ICustomer = req.customer;
+    if (!tranferDTO.customerId) {
+      tranferDTO.customerId = customer.id;
+    }
+    if (!tranferDTO.fromName) tranferDTO.fromName = customer.name;
+    tranferDTO.OTPToken = Math.floor(
+      100000 + Math.random() * 900000
+    ).toString();
+    await this.sendOTP(tranferDTO, customer);
+    const data = await lastValueFrom(
+      this.transactionService.send('createTransactionAbine', tranferDTO)
+    );
+    return data;
+  }
+  async sendOTP(
+    createTransactionDto: CreateTransactionAbineDto,
+    customer: ICustomer
+  ) {
+    if (!createTransactionDto.customerId) {
+      createTransactionDto.customerId = customer.id;
+    }
+    if (!createTransactionDto.fromName)
+      createTransactionDto.fromName = customer.name;
+    const sgTemplate = 'd-e12e8d5e02074d79b04502f2aa32e7fd';
+    const mail: SendGrid.MailDataRequired = {
+      to: customer.email,
+      subject: 'OTP trancational confirmation',
+      from: 'laptrinhweb100@gmail.com',
+      dynamicTemplateData: {
+        email: 'laptrinhweb100@gmail.com',
+        headerText: 'confirm your transaction',
+        code: createTransactionDto.OTPToken,
+      },
+      templateId: sgTemplate,
+    };
+    console.log(mail);
+
+    return await this.mailerService.send(mail);
+  }
+  @ApiBearerAuth()
+  @Patch('updateBalance/:id')
+  @Authorization(true)
+  updateBalance(
+    @Param('id') id: string,
+    @Body() updateBalanceDto: UpdateBalanceDto
+  ) {
+    updateBalanceDto.id = id;
+    return lastValueFrom(
+      this.transactionService.send('setBalanceAbine', updateBalanceDto)
+    );
+  }
+  @ApiBearerAuth()
+  @Post('createReceiver')
+  @Authorization(true)
+  async createReceiver(
+    @Body() createReceiverDto: CreateReceiverDto,
+    @Req() request
+  ) {
+    createReceiverDto.customerId = request.customer.id;
+    const result = await lastValueFrom(
+      this.receiverService.send('createReceiverAbine', createReceiverDto)
+    );
+    return result;
   }
 
   @Post('external/transfer/in')

@@ -3,6 +3,7 @@ import { MessagePattern, Payload } from '@nestjs/microservices';
 import { TransactionService } from './transaction.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
+import { FindAllDTO } from './dto/find-all.dto';
 
 @Controller()
 export class TransactionController {
@@ -44,12 +45,23 @@ export class TransactionController {
 
   @MessagePattern('createTransactionAbine')
   async createAbine(@Payload() createTransactionDto: CreateTransactionDto) {
-    return await this.transactionService.createAbine(createTransactionDto);
+    const fromAccount = await this.transactionService.findByAccountNumber(
+      createTransactionDto.fromAccount
+    );
+    if (fromAccount) createTransactionDto.fromAccount = fromAccount._id;
+    const validateTrans = await this.transactionService.validateTransaction(
+      createTransactionDto
+    );
+    if (validateTrans.validated)
+      return await this.transactionService.createAbine(createTransactionDto);
+    throw new BadRequestException(
+      `Validation failed: ${validateTrans.message}`
+    );
   }
 
   @MessagePattern('findAllTransaction')
-  findAll() {
-    return this.transactionService.findAll();
+  findAll(findAllDTO: FindAllDTO) {
+    return this.transactionService.findAll(findAllDTO);
   }
 
   @MessagePattern('findAllTransactionByCustomerId')
@@ -78,5 +90,13 @@ export class TransactionController {
   @MessagePattern('removeTransaction')
   remove(@Payload() id: string) {
     return this.transactionService.remove(id);
+  }
+  @MessagePattern('setBalance')
+  setBalance(@Payload() data: { id: string; code: string }) {
+    return this.transactionService.setBalance(data);
+  }
+  @MessagePattern('setBalanceAbine')
+  setBalanceAbine(@Payload() data: { id: string; code: string }) {
+    return this.transactionService.setBalanceAbine(data);
   }
 }

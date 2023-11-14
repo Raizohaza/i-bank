@@ -7,6 +7,7 @@ import { AccountController } from './account/account.controller';
 import { TransactionController } from './transaction/transaction.controller';
 import { LinkingBanksController } from './linking-banks/linking-banks.controller';
 import { EmployeeController } from './employee/employee.controller';
+import { SendgridService } from 'libs/utils/src/lib/sendgrid.service';
 @Module({
   imports: [ConfigService],
   controllers: [
@@ -77,6 +78,10 @@ import { EmployeeController } from './employee/employee.controller';
         return ClientProxyFactory.create(configService.get('employeeService'));
       },
       inject: [ConfigService],
+    },
+    {
+      provide: 'MAILER_SERVICE',
+      useClass: SendgridService,
     },
   ],
 })

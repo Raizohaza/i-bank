@@ -9,6 +9,7 @@ export interface IAccountSchema extends mongoose.Document {
   type: string;
   balance: number;
   accountNumber: string;
+  status: string;
 }
 export const AccountSchema = new mongoose.Schema<IAccountSchema>(
   {
@@ -22,6 +23,11 @@ export const AccountSchema = new mongoose.Schema<IAccountSchema>(
     },
     accountNumber: { type: String, required: true },
     balance: Number,
+    status: {
+      type: String,
+      default: 'ACTIVE',
+      enum: ['ACTIVE', 'INACTIVE'],
+    },
   },
   {
     timestamps: true,

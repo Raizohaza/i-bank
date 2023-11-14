@@ -96,4 +96,12 @@ export class AccountController {
     const result = await this.accountService.setBalance(data);
     return result;
   }
+
+  @MessagePattern('setBalanceAbine')
+  async setBalanceAbine(
+    @Payload() data: { fromAccount: string; toAccount: string; amount: number }
+  ) {
+    const result = await this.accountService.setBalanceAbine(data);
+    return result;
+  }
 }

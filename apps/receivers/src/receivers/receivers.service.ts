@@ -32,6 +32,11 @@ export class ReceiversService {
     const newReceiver = new this.receiverModel(createReceiverDto);
     return await newReceiver.save();
   }
+  async createReceiverAbine(createReceiverDto: CreateReceiverDto) {
+    console.log(createReceiverDto);
+    const newReceiver = new this.receiverModel(createReceiverDto);
+    return await newReceiver.save();
+  }
   async createByAccountNumber(createReceiverDto: CreateReceiverDto) {
     console.log(createReceiverDto);
 
@@ -105,14 +110,20 @@ export class ReceiversService {
       {
         $unwind: {
           path: '$accounts',
-          preserveNullAndEmptyArrays: false,
+          preserveNullAndEmptyArrays: true,
         },
       },
       {
         $project: {
           remindName: 1,
           accountId: 1,
-          accountNumber: '$accounts.accountNumber',
+          accountNumber: {
+            $cond: [
+              { $eq: ['$accountNumber', null] },
+              '$accounts.accountNumber',
+              '$accountNumber',
+            ],
+          },
         },
       },
     ]);

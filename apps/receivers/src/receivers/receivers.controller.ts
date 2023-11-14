@@ -8,6 +8,10 @@ import { UpdateReceiverDto } from './dto/update-receiver.dto';
 export class ReceiversController {
   constructor(private readonly receiversService: ReceiversService) {}
 
+  @MessagePattern('createReceiverAbine')
+  createReceiverAbine(@Payload() createReceiverDto: CreateReceiverDto) {
+    return this.receiversService.createReceiverAbine(createReceiverDto);
+  }
   @MessagePattern('createReceiver')
   create(@Payload() createReceiverDto: CreateReceiverDto) {
     return this.receiversService.create(createReceiverDto);

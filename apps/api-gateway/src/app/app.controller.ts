@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Redirect } from '@nestjs/common';
 
 import { AppService } from './app.service';
 
@@ -7,6 +7,7 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get()
+  @Redirect('/api', 301)
   getData() {
     return this.appService.getData();
   }

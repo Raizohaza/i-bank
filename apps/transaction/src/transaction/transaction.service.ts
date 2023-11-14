@@ -1,12 +1,12 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { ITransaction } from './transaction.interface';
 import { InjectModel } from '@nestjs/mongoose';
-import { plainToClass } from 'class-transformer';
 import { ClientProxy } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
+import { FindAllDTO } from './dto/find-all.dto';
 @Injectable()
 export class TransactionService {
   constructor(
@@ -38,27 +38,59 @@ export class TransactionService {
 
   async create(createTransactionDto: CreateTransactionDto) {
     const newTrans = await this.model.create(createTransactionDto);
+    return await newTrans;
+  }
+
+  async setBalance({ id, code }: { id: string; code: string }) {
+    const transaction = await this.findOne(id);
+    if (code !== transaction.OTPToken.toString())
+      throw new UnauthorizedException('Invalid Code');
+    if (transaction.OTPVerify)
+      throw new UnauthorizedException('Already update balance');
+    await this.update(id, { OTPVerify: true, id: id });
     const setBalance = await lastValueFrom(
       this.accountService.send('setBalance', {
-        fromAccount: createTransactionDto.fromAccount,
-        toAccount: createTransactionDto.toAccount,
-        amount: createTransactionDto.amount,
+        fromAccount: transaction.fromAccount,
+        toAccount: transaction.toAccount,
+        amount: transaction.amount,
       })
     );
-    console.log(setBalance);
-
-    return await newTrans;
+    return setBalance;
   }
+  async setBalanceAbine({ id, code }: { id: string; code: string }) {
+    const transaction = await this.findOne(id);
+    if (code !== transaction.OTPToken.toString())
+      throw new UnauthorizedException('Invalid Code');
+    if (transaction.OTPVerify)
+      throw new UnauthorizedException('Already update balance');
+    await this.update(id, { OTPVerify: true, id: id });
+    const setBalance = await lastValueFrom(
+      this.accountService.send('setBalanceAbine', {
+        fromAccount: transaction.fromAccount,
+        toAccount: transaction.toAccount,
+        amount: transaction.amount,
+      })
+    );
+    return setBalance;
+  }
+
   async createAbine(createTransactionDto: CreateTransactionDto) {
-    const keys = JSON.parse(JSON.stringify(createTransactionDto));
-    console.log(keys);
+    createTransactionDto.bank = 'Abine';
     const newTrans = await this.model.create(createTransactionDto);
-    console.log(newTrans);
-
     return await newTrans;
   }
-  async findAll() {
-    return await this.model.find({}).lean();
+  async findAll(findAllDTO: FindAllDTO) {
+    console.log({ findAllDTO });
+    const query: any = { $and: [] };
+    if (findAllDTO.bank) query.bank = findAllDTO.bank;
+
+    if (findAllDTO.from)
+      query.$and.push({ updatedAt: { $gte: findAllDTO.from } });
+
+    if (findAllDTO.to) query.$and.push({ updatedAt: { $lte: findAllDTO.to } });
+    if (!query.$and.length) delete query.$and;
+
+    return await this.model.find(query).lean();
   }
   async findAllByCustomerId(id) {
     const data = await this.model.find({ customerId: id }).lean();
@@ -75,14 +107,14 @@ export class TransactionService {
     return data;
   }
   async findOne(id: string) {
-    const data = await this.model.find({ _id: id }).lean();
+    const data = await this.model.findOne({ _id: id });
     console.log(data);
     return data;
   }
 
-  update(id: string, updateTransactionDto: UpdateTransactionDto) {
+  async update(id: string, updateTransactionDto: UpdateTransactionDto) {
     console.log(updateTransactionDto);
-    return `This action updates a #${id} transaction`;
+    return await this.model.findOneAndUpdate({ _id: id }, updateTransactionDto);
   }
 
   remove(id: string) {
