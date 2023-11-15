@@ -8,6 +8,7 @@ import { TransactionController } from './transaction/transaction.controller';
 import { LinkingBanksController } from './linking-banks/linking-banks.controller';
 import { EmployeeController } from './employee/employee.controller';
 import { SendgridService } from 'libs/utils/src/lib/sendgrid.service';
+import { DebtController } from './debt/debt.controller';
 @Module({
   imports: [ConfigService],
   controllers: [
@@ -17,6 +18,7 @@ import { SendgridService } from 'libs/utils/src/lib/sendgrid.service';
     TransactionController,
     LinkingBanksController,
     EmployeeController,
+    DebtController,
   ],
   providers: [
     ConfigService,
@@ -76,6 +78,13 @@ import { SendgridService } from 'libs/utils/src/lib/sendgrid.service';
       provide: 'EMPLOYEE_SERVICE',
       useFactory: (configService: ConfigService) => {
         return ClientProxyFactory.create(configService.get('employeeService'));
+      },
+      inject: [ConfigService],
+    },
+    {
+      provide: 'DEBT_SERVICE',
+      useFactory: (configService: ConfigService) => {
+        return ClientProxyFactory.create(configService.get('debtService'));
       },
       inject: [ConfigService],
     },

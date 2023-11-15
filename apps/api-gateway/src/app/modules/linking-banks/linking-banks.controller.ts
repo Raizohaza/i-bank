@@ -5,7 +5,6 @@ import {
   Body,
   Param,
   StreamableFile,
-  BadRequestException,
 } from '@nestjs/common';
 import { CreateLinkingBankDto } from './dto/create-linking-bank.dto';
 import { Header, Inject, Patch, Req } from '@nestjs/common/decorators';
@@ -34,7 +33,6 @@ import { ICustomer } from './dto/customer.interface';
 import * as SendGrid from '@sendgrid/mail';
 import { UpdateBalanceDto } from './dto/update-balance.dto';
 import { BaseReponse } from '../../interfaces/common/base-reponse.dto';
-import mongoose from 'mongoose';
 import { CreateReceiverDto } from './dto/create-receiver.dto';
 
 @ApiTags('linking-banks')
@@ -251,6 +249,7 @@ export class LinkingBanksController {
     const data = await lastValueFrom(
       this.transactionService.send('createTransactionAbine', tranferDTO)
     );
+    console.log(data);
 
     return {
       message: 'Success',

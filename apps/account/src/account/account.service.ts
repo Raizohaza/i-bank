@@ -130,11 +130,13 @@ export class AccountService {
     const result = await Promise.all([
       this.accountModel.findOneAndUpdate(
         { _id: data.fromAccount },
-        { balance: fromAccount.balance }
+        { balance: fromAccount.balance },
+        { new: true }
       ),
       this.accountModel.findOneAndUpdate(
         { _id: data.toAccount },
-        { balance: toAccount.balance }
+        { balance: toAccount.balance },
+        { new: true }
       ),
     ]);
     console.log(result);

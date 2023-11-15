@@ -7,9 +7,9 @@ import { ICustomer } from '../interfaces/customer.interface';
 import { ICustomerLink } from '../interfaces/customer-link.interface';
 import { ClientProxy } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
-import { CreateAccountDto } from '../dto/create-account.dto';
 import { FindCustomerDTO } from '../dto/find-customer.dto';
-
+import { UpdateCustomerDto } from '../dto/update-customer.dto';
+import { CreateAccountDto } from '../dto/create-account.dto';
 @Injectable()
 export class CustomerService {
   constructor(
@@ -81,5 +81,24 @@ export class CustomerService {
       this.accountService.send('accountCreate', account)
     );
     return newAccount;
+  }
+
+  async closeAccount(id: string) {
+    return await this.customerModel.findOneAndUpdate(
+      { _id: id },
+      { status: 'INACTIVE' },
+      { new: true }
+    );
+  }
+
+  async updateCustomer(updateCustomerDto: UpdateCustomerDto) {
+    const customer = await this.customerModel.findOne({
+      _id: updateCustomerDto.id,
+    });
+    // customer.email = updateCustomerDto?.email;
+    customer.name = updateCustomerDto?.name;
+    customer.password = updateCustomerDto?.password;
+
+    return await customer.save();
   }
 }

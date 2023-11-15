@@ -1,13 +1,13 @@
 import { Controller, HttpStatus, Inject } from '@nestjs/common';
-import { MessagePattern, ClientProxy, Payload } from '@nestjs/microservices';
+import { MessagePattern, Payload } from '@nestjs/microservices';
 
 import { CustomerService } from './services/customer.service';
 import { ICustomer } from './interfaces/customer.interface';
 import { ICustomerCreateResponse } from './interfaces/customer-create-response.interface';
 import { ICustomerSearchResponse } from './interfaces/customer-search-response.interface';
 import { ICustomerConfirmResponse } from './interfaces/customer-confirm-response.interface';
-import { lastValueFrom } from 'rxjs';
 import { FindCustomerDTO } from './dto/find-customer.dto';
+import { UpdateCustomerDto } from './dto/update-customer.dto';
 
 @Controller('customer')
 export class CustomerController {
@@ -206,5 +206,13 @@ export class CustomerController {
   @MessagePattern('findAllCustomer')
   public async findAllCustomer(@Payload() findAllCustomer: FindCustomerDTO) {
     return await this.customerService.findAllCustomer(findAllCustomer);
+  }
+  @MessagePattern('closeAccount')
+  closeAccount(@Payload() id: string) {
+    return this.customerService.closeAccount(id);
+  }
+  @MessagePattern('updateCustomer')
+  updateCustomer(@Payload() updateCustomerDto: UpdateCustomerDto) {
+    return this.customerService.updateCustomer(updateCustomerDto);
   }
 }

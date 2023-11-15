@@ -7,6 +7,7 @@ import {
   Inject,
   Logger,
   Param,
+  Patch,
   Post,
   Put,
   Query,
@@ -21,9 +22,8 @@ import {
 } from '@nestjs/swagger';
 import { firstValueFrom, lastValueFrom } from 'rxjs';
 import { Authorization } from '../../decorators/authorization.decorator';
-import { Roles } from '../../decorators/roles.decorator';
-import { Role } from '../../enums/role.enum';
 import { IAuthorizedRequest } from '../../interfaces/common/authorized-request.interface';
+import { BaseReponse } from '../../interfaces/common/base-reponse.dto';
 import {
   IServiveTokenCreateResponse,
   IServiceTokenDestroyResponse,
@@ -40,6 +40,7 @@ import {
 } from './dto';
 import { findAllCustomerResponseDTO } from './dto/find-all-customer-response.dto';
 import { FindCustomerDTO } from './dto/find-customer.dto';
+import { UpdateCustomerDto } from './dto/update-customer.dto';
 import { IServiceCustomerConfirmResponse } from './service-customer-confirm-response.interface';
 import { IServiceCustomerCreateResponse } from './service-customer-create-response.interface';
 import { IServiceCustomerGetByIdResponse } from './service-customer-get-by-id-response.interface';
@@ -65,8 +66,6 @@ export class CustomerController {
     const customerResponse = await lastValueFrom(
       this.customerService.send('findAllCustomer', findCustomerDTO)
     );
-    // console.log(customerResponse);
-
     return {
       message: customerResponse.message,
       data: {
@@ -240,5 +239,32 @@ export class CustomerController {
       message: confirmCustomerResponse.message,
       data: null,
     };
+  }
+
+  @Patch('closeAccount/:id')
+  @Authorization(true)
+  @ApiOkResponse({})
+  async closeAccount(@Param('id') id: string) {
+    const result = await firstValueFrom(
+      this.customerService.send('closeAccount', id)
+    );
+    const respone = new BaseReponse();
+    respone.data = result;
+    return respone;
+  }
+  @Patch(':id')
+  @Authorization(true)
+  @ApiOkResponse({})
+  async updateCustomer(
+    @Param('id') id: string,
+    @Body() updateCustomerDto: UpdateCustomerDto
+  ) {
+    updateCustomerDto.id = id;
+    const result = await firstValueFrom(
+      this.customerService.send('updateCustomer', updateCustomerDto)
+    );
+    const respone = new BaseReponse();
+    respone.data = result;
+    return respone;
   }
 }

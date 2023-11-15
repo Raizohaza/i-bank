@@ -14,6 +14,7 @@ export interface ICustomerSchema extends mongoose.Document {
   is_confirmed: boolean;
   type: string;
   name: string;
+  status: string;
   comparePassword: (password: string) => Promise<boolean>;
   getEncryptedPassword: (password: string) => Promise<string>;
 }
@@ -43,6 +44,11 @@ export const CustomerSchema = new mongoose.Schema<ICustomerSchema>(
     },
     type: {
       type: String,
+      default: 'customer',
+    },
+    status: {
+      type: String,
+      default: 'ACTIVE',
     },
   },
   {

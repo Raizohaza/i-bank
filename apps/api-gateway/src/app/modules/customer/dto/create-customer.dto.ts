@@ -16,5 +16,6 @@ export class CreateCustomerDto {
     example: 'username',
   })
   name: string;
+  @ApiProperty({ default: 'customer' })
   type = 'customer';
 }

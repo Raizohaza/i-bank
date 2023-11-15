@@ -8,10 +8,10 @@
     "start3": "nx build && node ./dist/apps/api-gateway/main.js 6969",
     "start-services1": "nx run-many --target=serve --projects=token,customer,account",
     "start-services2": "nx run-many --target=serve --projects=receivers,transaction,employee",
-    "start-services3": "nx run-many --target=serve --projects=linking-bank",
+    "start-services3": "nx run-many --target=serve --projects=linking-bank,debt",
     "start-concurrently": "npx concurrently npm:start-services1 npm:start-services2 start-services3",
     "start-gateway": "nx serve api-gateway",
-    "build": "nx run-many --target=build --projects=api-gateway,token,customer,account,receivers,transaction,employee,linking-bank",
+    "build": "nx run-many --target=build --projects=api-gateway,token,customer,account,receivers,transaction,employee,linking-bank,debt",
     "test": "nx test",
     "start:gateway": "node ./dist/apps/api-gateway/main.js",
     "start:token": "node ./dist/apps/token/main.js",
@@ -20,9 +20,10 @@
     "start:transaction": "node ./dist/apps/transaction/main.js",
     "start:employee": "node ./dist/apps/employee/main.js",
     "start:receivers": "node ./dist/apps/receivers/main.js",
+    "start:debt": "node ./dist/apps/debt/main.js",
     "start:linking-bank": "node ./dist/apps/linking-bank/main.js",
-    "start:services": "concurrently \"npm run start:token\" \"npm run start:customer\" \"npm run start:account\" \"npm run start:transaction\" \"npm run start:employee\" \"npm run start:linking-bank\" \"npm run start:receivers\"",
-    "start:dist": "concurrently \"npm run start:gateway\" \"npm run start:token\" \"npm run start:customer\" \"npm run start:account\" \"npm run start:transaction\" \"npm run start:employee\" \"npm run start:linking-bank\" \"npm run start:receivers\""
+    "start:services": "concurrently \"npm run start:token\" \"npm run start:customer\" \"npm run start:account\" \"npm run start:transaction\" \"npm run start:employee\" \"npm run start:linking-bank\" \"npm run start:receivers\" \"npm run start:debt\"",
+    "start:dist": "concurrently \"npm run start:gateway\" \"npm run start:token\" \"npm run start:customer\" \"npm run start:account\" \"npm run start:transaction\" \"npm run start:employee\" \"npm run start:linking-bank\" \"npm run start:receivers\" \"npm run start:debt\""
   },
   "private": true,
   "dependencies": {
