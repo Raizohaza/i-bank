@@ -17,5 +17,6 @@ export class CreateCustomerResponseDto extends BaseReponse {
   data: {
     customer: ICustomer;
     token: string;
+    refreshToken?: string;
   };
 }

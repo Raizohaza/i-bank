@@ -14,6 +14,10 @@ export const TokenSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Token can not be empty'],
     },
+    refreshToken: {
+      type: String,
+      // required: [true, 'Refresh token can not be empty'],
+    },
   },
   {
     toObject: {

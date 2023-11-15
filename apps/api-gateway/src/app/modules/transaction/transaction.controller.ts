@@ -63,7 +63,6 @@ export class TransactionController {
         };
       })
       .catch((e) => {
-        console.log(e);
         throw new BadRequestException('Not enough balance remain');
       });
   }
@@ -124,7 +123,6 @@ export class TransactionController {
         };
       })
       .catch((e) => {
-        console.log(e);
         throw new BadRequestException('Not enough balance remain');
       });
   }

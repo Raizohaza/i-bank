@@ -10,9 +10,11 @@ import {
   BadRequestException,
   HttpStatus,
   Req,
+  Sse,
+  Query,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { lastValueFrom } from 'rxjs';
+import { interval, lastValueFrom, map, Observable, Subject } from 'rxjs';
 import { ICustomer } from '../customer';
 import { CreateDebtDto } from './dto/create-debt.dto';
 import { UpdateDebtDto } from './dto/update-debt.dto';
@@ -23,6 +25,7 @@ import { CancelDebtDto } from './dto/cancel-debt.dto';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { BaseReponse } from '../../interfaces/common/base-reponse.dto';
 import { UpdateBalanceDto } from './dto/update-balance.dto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 @ApiBearerAuth()
 @ApiTags('debt')
 @Controller('debt')
@@ -34,9 +37,31 @@ export class DebtController {
     private readonly transactionService: ClientProxy,
     @Inject('DEBT_SERVICE')
     private readonly debtService: ClientProxy,
+    private readonly eventService: EventEmitter2,
     @Inject('MAILER_SERVICE') private readonly mailerService
   ) {}
 
+  @Sse('sse/:id')
+  sse(
+    @Param() id //SseQueryDto
+  ): Observable<any> {
+    const subject$ = new Subject();
+    this.eventService.on('debt', (data) => {
+      // console.log(data);
+      data.customerId = id;
+      // if (sseQuery.email !== data.email) return;
+      subject$.next(data);
+    });
+    return subject$.pipe(map((data) => ({ data })));
+  }
+
+  @Get('exampleEmit')
+  exampleEmit() {
+    this.eventService.emit('debt', {
+      orderId: 1,
+      payload: {},
+    });
+  }
   @Post()
   @Authorization(true)
   async createByAccountNumber(
@@ -81,7 +106,7 @@ export class DebtController {
   async payDebt(@Req() req, @Param('id') id: string) {
     const customer: ICustomer = req.customer;
 
-    const toPayDebt: CreateDebtDto = await lastValueFrom(
+    const toPayDebt: UpdateDebtDto = await lastValueFrom(
       this.debtService.send('findOneDebt', id)
     );
     console.log(toPayDebt);
@@ -92,13 +117,19 @@ export class DebtController {
     newAutoTransaction.amount = toPayDebt.amount;
     newAutoTransaction.contentTransaction = '';
 
-    const newTrans = await this.createAutoTransaction(newAutoTransaction, req);
-    // const payDebt = await lastValueFrom(
-    //   this.debtService.send('updateDebt', { id, status: 'paid' })
-    // );
-    return true;
+    const newTrans = await this.createAutoTransaction(
+      newAutoTransaction,
+      req,
+      toPayDebt.id
+    );
+
+    return newTrans;
   }
-  async createAutoTransaction(createTransactionDto: CreateTransactionDto, req) {
+  async createAutoTransaction(
+    createTransactionDto: CreateTransactionDto,
+    req,
+    debtId: string
+  ) {
     const customer: ICustomer = req.customer;
     if (!createTransactionDto.customerId) {
       createTransactionDto.customerId = customer.id;
@@ -113,7 +144,12 @@ export class DebtController {
     return await lastValueFrom(
       this.transactionService.send('createTransaction', createTransactionDto)
     )
-      .then((respone) => {
+      .then(async (respone) => {
+        const payDebt = await lastValueFrom(
+          this.debtService.send('updateDebt', { id: debtId, status: 'paid' })
+        );
+        console.log(payDebt);
+
         return <BaseReponse>{
           status: HttpStatus.CREATED,
           message: 'success',

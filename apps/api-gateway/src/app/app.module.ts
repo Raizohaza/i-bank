@@ -17,9 +17,16 @@ import { RpcServicesModule } from './modules/RpcServices.module';
 import { UtilsModule } from '@i-bank/utils';
 import { ConfigService } from 'libs/utils/src/config/configuration';
 import { SendgridService } from 'libs/utils/src/lib/sendgrid.service';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { AuthRefreshGuard } from './guards/authorizationRefresh.guard';
 
 @Module({
-  imports: [ConfigService, RpcServicesModule, UtilsModule],
+  imports: [
+    ConfigService,
+    RpcServicesModule,
+    UtilsModule,
+    EventEmitterModule.forRoot(),
+  ],
   controllers: [AppController],
   providers: [
     AppService,
@@ -72,6 +79,10 @@ import { SendgridService } from 'libs/utils/src/lib/sendgrid.service';
     {
       provide: APP_GUARD,
       useClass: RolesGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: AuthRefreshGuard,
     },
   ],
 })

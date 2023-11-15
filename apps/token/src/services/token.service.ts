@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Query } from 'mongoose';
@@ -11,22 +11,63 @@ export class TokenService {
     @InjectModel('Token') private readonly tokenModel: Model<IToken>,
   ) {}
 
-  public createToken(uid: string): Promise<IToken> {
-    const token = this.jwtService.sign(
-      {
-        uid: uid,
-      },
-      {
-        expiresIn: 30 * 24 * 60 * 60,
-      },
-    );
+  async createToken(uid: string): Promise<IToken> {
+    const tokenByUid = await this.tokenModel.findOne({ customer_id: uid });
+    if (tokenByUid) await this.deleteTokenForUid(uid);
+    const [token, refreshToken] = await Promise.all([
+      this.jwtService.signAsync(
+        {
+          uid: uid,
+        },
+        {
+          expiresIn: '15m',
+        },
+      ),
+      this.jwtService.signAsync(
+        {
+          uid: uid,
+        },
+        {
+          expiresIn: '7d',
+        },
+      ),
+    ]);
 
-    return new this.tokenModel({
+    return await new this.tokenModel({
       uid: uid,
       token,
+      refreshToken,
     }).save();
   }
+  async refreshTokens({
+    uid,
+    refreshToken,
+  }: {
+    uid: string;
+    refreshToken: string;
+  }): Promise<IToken> {
+    const tokenByUid = await this.tokenModel.findOne({ uid: uid });
+    console.log({ tokenByUid, uid });
 
+    if (!tokenByUid || !tokenByUid.refreshToken)
+      throw new ForbiddenException('Access Denied');
+    console.log(tokenByUid);
+
+    const refreshTokenMatches = tokenByUid.refreshToken === refreshToken;
+
+    if (!refreshTokenMatches) throw new ForbiddenException('Access Denied');
+    const tokens = await this.createToken(uid);
+    await this.updateRefreshToken(tokenByUid.id, tokens.refreshToken);
+    return tokens;
+  }
+  async updateRefreshToken(id: string, refreshToken: string) {
+    await this.tokenModel.updateOne(
+      { _id: id },
+      {
+        refreshToken: refreshToken,
+      },
+    );
+  }
   public async deleteTokenForUid(
     uid: string,
   ): Promise<Query<unknown, unknown>> {
@@ -54,6 +95,35 @@ export class TokenService {
         } else {
           result = {
             uid: tokenData.uid,
+          };
+        }
+      } catch (e) {
+        result = null;
+      }
+    }
+    return result;
+  }
+
+  public async decodeRefreshToken(token: string) {
+    const tokenModel = await this.tokenModel.find({ refreshToken: token });
+    let result = null;
+
+    if (tokenModel && tokenModel[0]) {
+      try {
+        const refreshTokenData = (await this.jwtService.decode(
+          tokenModel[0].refreshToken,
+        )) as {
+          exp: number;
+          uid: unknown;
+        };
+        if (
+          !refreshTokenData ||
+          refreshTokenData.exp <= Math.floor(+new Date() / 1000)
+        ) {
+          result = null;
+        } else {
+          result = {
+            uid: refreshTokenData.uid,
           };
         }
       } catch (e) {

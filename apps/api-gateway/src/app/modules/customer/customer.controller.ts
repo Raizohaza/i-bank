@@ -21,7 +21,10 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { firstValueFrom, lastValueFrom } from 'rxjs';
-import { Authorization } from '../../decorators/authorization.decorator';
+import {
+  Authorization,
+  AuthorizationRefresh,
+} from '../../decorators/authorization.decorator';
 import { IAuthorizedRequest } from '../../interfaces/common/authorized-request.interface';
 import { BaseReponse } from '../../interfaces/common/base-reponse.dto';
 import {
@@ -95,7 +98,18 @@ export class CustomerController {
       },
     };
   }
+  @Get('refresh')
+  @AuthorizationRefresh(true)
+  async refreshTokens(@Req() req) {
+    const uid = req.customer.id;
+    const refreshToken = req['refreshToken'];
+    console.log({ uid, refreshToken });
+    return await lastValueFrom(
+      this.tokenServiceClient.send('token_refresh', { uid, refreshToken })
+    );
 
+    // return this.authService.refreshTokens(userId, refreshToken);
+  }
   @Post()
   // @Authorization(true)
   // @Roles(Role.Admin, Role.Employee)
@@ -142,7 +156,7 @@ export class CustomerController {
   public async loginCustomer(
     @Body() loginRequest: LoginCustomerDto
   ): Promise<LoginCustomerResponseDto> {
-    console.log({ loginRequest, customerService: this.customerService });
+    console.log({ loginRequest });
 
     const getCustomerResponse: IServiceCustomerSearchResponse =
       await lastValueFrom(
@@ -174,6 +188,7 @@ export class CustomerController {
       message: createTokenResponse.message,
       data: {
         token: createTokenResponse.token,
+        refreshToken: createTokenResponse.refreshToken,
       },
     };
   }

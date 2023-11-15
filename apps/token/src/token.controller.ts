@@ -58,10 +58,26 @@ export class TokenController {
   public async decodeToken(data: {
     token: string;
   }): Promise<ITokenDataResponse> {
-    const tokenData = await this.tokenService.decodeToken(data.token);
+    const tokenData =
+      (await this.tokenService.decodeToken(data.token)) ||
+      (await this.tokenService.decodeRefreshToken(data.token));
     return {
       status: tokenData ? HttpStatus.OK : HttpStatus.UNAUTHORIZED,
       message: tokenData ? 'token_decode_success' : 'token_decode_unauthorized',
+      data: tokenData,
+    };
+  }
+
+  @MessagePattern('token_refresh')
+  public async refreshToken(data: { uid: string; refreshToken: string }) {
+    console.log(data);
+
+    const tokenData = await this.tokenService.refreshTokens(data);
+    return {
+      status: tokenData ? HttpStatus.OK : HttpStatus.UNAUTHORIZED,
+      message: tokenData
+        ? 'token_refresh_success'
+        : 'token_refresh_unauthorized',
       data: tokenData,
     };
   }
