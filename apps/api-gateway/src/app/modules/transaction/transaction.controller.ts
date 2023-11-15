@@ -84,7 +84,7 @@ export class TransactionController {
       dynamicTemplateData: {
         email: 'laptrinhweb100@gmail.com',
         headerText: 'confirm your transaction',
-        code: '123456',
+        code: createTransactionDto.OTPToken,
       },
       templateId: sgTemplate,
     };
@@ -105,7 +105,9 @@ export class TransactionController {
     }
     if (!createTransactionDto.fromName)
       createTransactionDto.fromName = customer.name;
-    createTransactionDto.OTPToken = '123456';
+    createTransactionDto.OTPToken = Math.floor(
+      100000 + Math.random() * 900000
+    ).toString();
     await this.sendOTP(createTransactionDto, customer);
     // return true;
     return await lastValueFrom(

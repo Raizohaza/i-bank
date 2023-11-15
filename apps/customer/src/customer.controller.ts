@@ -1,5 +1,5 @@
 import { Controller, HttpStatus, Inject } from '@nestjs/common';
-import { MessagePattern, ClientProxy } from '@nestjs/microservices';
+import { MessagePattern, ClientProxy, Payload } from '@nestjs/microservices';
 
 import { CustomerService } from './services/customer.service';
 import { ICustomer } from './interfaces/customer.interface';
@@ -7,6 +7,7 @@ import { ICustomerCreateResponse } from './interfaces/customer-create-response.i
 import { ICustomerSearchResponse } from './interfaces/customer-search-response.interface';
 import { ICustomerConfirmResponse } from './interfaces/customer-confirm-response.interface';
 import { lastValueFrom } from 'rxjs';
+import { FindCustomerDTO } from './dto/find-customer.dto';
 
 @Controller('customer')
 export class CustomerController {
@@ -203,7 +204,7 @@ export class CustomerController {
     return result;
   }
   @MessagePattern('findAllCustomer')
-  public async findAllCustomer() {
-    return await this.customerService.findAllCustomer();
+  public async findAllCustomer(@Payload() findAllCustomer: FindCustomerDTO) {
+    return await this.customerService.findAllCustomer(findAllCustomer);
   }
 }

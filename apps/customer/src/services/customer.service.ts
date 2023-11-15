@@ -8,6 +8,7 @@ import { ICustomerLink } from '../interfaces/customer-link.interface';
 import { ClientProxy } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
 import { CreateAccountDto } from '../dto/create-account.dto';
+import { FindCustomerDTO } from '../dto/find-customer.dto';
 
 @Injectable()
 export class CustomerService {
@@ -23,8 +24,12 @@ export class CustomerService {
   public async searchCustomer(params: { email: string }): Promise<ICustomer[]> {
     return this.customerModel.find(params).exec();
   }
-  async findAllCustomer() {
-    return await this.customerModel.find();
+  async findAllCustomer(findCustomerDTO: FindCustomerDTO) {
+    const query: any = {};
+
+    if (findCustomerDTO?.type?.length) query.type = findCustomerDTO.type;
+    console.log({ findCustomerDTO, query });
+    return await this.customerModel.find(query);
   }
   public async searchCustomerById(id: string): Promise<ICustomer> {
     return this.customerModel.findById(id).exec();

@@ -9,6 +9,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   Req,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
@@ -38,6 +39,7 @@ import {
   LogoutCustomerResponseDto,
 } from './dto';
 import { findAllCustomerResponseDTO } from './dto/find-all-customer-response.dto';
+import { FindCustomerDTO } from './dto/find-customer.dto';
 import { IServiceCustomerConfirmResponse } from './service-customer-confirm-response.interface';
 import { IServiceCustomerCreateResponse } from './service-customer-create-response.interface';
 import { IServiceCustomerGetByIdResponse } from './service-customer-get-by-id-response.interface';
@@ -57,11 +59,13 @@ export class CustomerController {
   @ApiOkResponse({
     type: findAllCustomerResponseDTO,
   })
-  public async findAll(): Promise<findAllCustomerResponseDTO> {
+  public async findAll(
+    @Query() findCustomerDTO: FindCustomerDTO
+  ): Promise<findAllCustomerResponseDTO> {
     const customerResponse = await lastValueFrom(
-      this.customerService.send('findAllCustomer', {})
+      this.customerService.send('findAllCustomer', findCustomerDTO)
     );
-    console.log(customerResponse);
+    // console.log(customerResponse);
 
     return {
       message: customerResponse.message,
