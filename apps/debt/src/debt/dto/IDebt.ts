@@ -11,7 +11,6 @@ export interface IDebt {
   contentDebt: string;
   cancelReason?: string;
   //token
-  OTPToken: string;
-  OTPVerify: boolean;
   status: string;
+  transId?: string;
 }

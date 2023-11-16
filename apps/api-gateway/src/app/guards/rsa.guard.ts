@@ -6,8 +6,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { decrypt, isVerified, isVerifiedWithSign } from '../utils/rsa.encrypt';
-import * as fs from 'fs';
+import { decrypt, isVerifiedWithSign } from '../utils/rsa.encrypt';
 import * as fetch from 'node-fetch';
 import 'dotenv/config';
 import { KeyLike } from 'crypto';
@@ -33,18 +32,18 @@ export class RsaGuard implements CanActivate {
     const fetchData = await fetch(HOME + '/public.pem');
     const publicKey: KeyLike = await fetchData.text();
     const bfPublicKey: Buffer = Buffer.from(publicKey.toString());
-    // if (!isVerified(data.toString('utf-8')))
-    //   throw new UnauthorizedException('Signature invalid!');
-    console.log({ data: verifyData, sign, publicKey, bfPublicKey });
 
-    // if (!isVerifiedWithSign({ data: verifyData, sign, publicKey: bfPublicKey }))
-    //   throw new UnauthorizedException('Signature invalid!');
+    console.log({ data: verifyData, sign });
+
+    if (!isVerifiedWithSign({ data: verifyData, sign, publicKey: bfPublicKey }))
+      throw new UnauthorizedException('Signature invalid!');
     if (!data) {
       return false;
     }
     const decryptedData = JSON.parse(data.toString());
-    // decryptedData.sign = abineSign;
+
     request.body = decryptedData;
+    request.abineSign = abineSign;
     console.log(request.body);
 
     return true;

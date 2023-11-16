@@ -11,11 +11,10 @@ export interface IDebtSchema extends mongoose.Document {
   contentDebt: string;
   cancelReason?: string;
   //token
-  OTPToken: string;
-  OTPVerify: boolean;
   status: string;
   creditorId: string;
   debtorId: string;
+  transId: string;
 }
 export const DebtSchema = new mongoose.Schema<IDebtSchema>(
   {
@@ -26,13 +25,12 @@ export const DebtSchema = new mongoose.Schema<IDebtSchema>(
     creditor: String,
     creditorId: String,
     debtorId: String,
-    OTPToken: String,
-    OTPVerify: Boolean,
     contentDebt: String,
     cancelReason: String,
+    transId: String,
     status: {
       type: String,
-      enum: ['unpaid', 'paid'],
+      enum: ['unpaid', 'paid', 'canceled'],
       default: 'unpaid',
     },
   },

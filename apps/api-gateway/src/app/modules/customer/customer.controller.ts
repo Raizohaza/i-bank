@@ -266,9 +266,9 @@ export class CustomerController {
     const result = await firstValueFrom(
       this.customerService.send('closeAccount', id)
     );
-    const respone = new BaseReponse();
-    respone.data = result;
-    return respone;
+    const response = new BaseReponse();
+    response.data = result;
+    return response;
   }
   @Patch(':id')
   @Authorization(true)
@@ -281,8 +281,8 @@ export class CustomerController {
     const result = await firstValueFrom(
       this.customerService.send('updateCustomer', updateCustomerDto)
     );
-    const respone = new BaseReponse();
-    respone.data = result;
-    return respone;
+    const response = new BaseReponse();
+    response.data = result;
+    return response;
   }
 }

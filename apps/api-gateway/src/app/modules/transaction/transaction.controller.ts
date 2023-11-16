@@ -55,11 +55,11 @@ export class TransactionController {
     return await lastValueFrom(
       this.transactionService.send('createTransaction', createTransactionDto)
     )
-      .then((respone) => {
+      .then((response) => {
         return <BaseReponse>{
           status: HttpStatus.CREATED,
           message: 'success',
-          data: respone,
+          data: response,
         };
       })
       .catch((e) => {
@@ -115,11 +115,11 @@ export class TransactionController {
         createTransactionDto
       )
     )
-      .then((respone) => {
+      .then((response) => {
         return <BaseReponse>{
           status: HttpStatus.CREATED,
           message: 'success',
-          data: respone,
+          data: response,
         };
       })
       .catch((e) => {

@@ -167,12 +167,12 @@ export class LinkingBanksController {
     console.log(res);
 
     const remoteRequest = res.json();
-    const respone = new BaseReponse();
-    respone.data = {
+    const response = new BaseReponse();
+    response.data = {
       newTrans,
       remoteRequest,
     };
-    return respone;
+    return response;
   }
   async createTransaction(tranferDTO: CreateTransactionAbineDto, req) {
     const customer: ICustomer = req.customer;

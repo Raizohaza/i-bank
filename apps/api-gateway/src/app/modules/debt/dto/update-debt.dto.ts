@@ -5,4 +5,5 @@ import { CreateDebtDto } from './create-debt.dto';
 export class UpdateDebtDto extends PartialType(CreateDebtDto) {
   @ApiHideProperty()
   id: string;
+  transId: string;
 }

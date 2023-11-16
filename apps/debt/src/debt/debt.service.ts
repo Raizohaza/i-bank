@@ -28,8 +28,10 @@ export class DebtService {
   }
 
   async update(id: string, updateDebtDto: UpdateDebtDto) {
-    console.log(updateDebtDto);
-    return await this.model.findOneAndUpdate({ _id: id }, updateDebtDto);
+    console.log({ updateDebtDto, id });
+    return await this.model.findOneAndUpdate({ _id: id }, updateDebtDto, {
+      new: true,
+    });
   }
 
   async remove(id: string) {

@@ -90,11 +90,13 @@ export class TransactionService {
     if (findAllDTO.to) query.$and.push({ updatedAt: { $lte: findAllDTO.to } });
     if (!query.$and.length) delete query.$and;
 
-    return await this.model.find(query).lean();
+    return await this.model.find(query, { sort: { updateAt: -1 } }).lean();
   }
   async findAllByCustomerId(id) {
-    const data = await this.model.find({ customerId: id }).lean();
-    console.log(data);
+    const data = await this.model
+      .find({ customerId: id }, {}, { sort: { updatedAt: -1 } })
+      .lean();
+
     return data;
   }
   async findAllTransactionByAccountNumber(accountNumber) {

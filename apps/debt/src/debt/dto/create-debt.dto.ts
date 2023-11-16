@@ -9,8 +9,6 @@ export class CreateDebtDto implements IDebt {
   type: string;
   contentDebt: string;
   //token
-  OTPToken: string;
-  OTPVerify: boolean;
   status: string;
   creditorId: string;
   debtorId: string;

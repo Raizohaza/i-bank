@@ -122,7 +122,12 @@ export class DebtController {
       req,
       toPayDebt.id
     );
-
+    const updateDebtDto = new UpdateDebtDto();
+    updateDebtDto.id = id;
+    updateDebtDto.transId = newTrans.data._id;
+    const payDebt = await lastValueFrom(
+      this.debtService.send('updateDebt', updateDebtDto)
+    );
     return newTrans;
   }
   async createAutoTransaction(
@@ -140,20 +145,14 @@ export class DebtController {
       100000 + Math.random() * 900000
     ).toString();
     await this.sendOTP(createTransactionDto, customer);
-    // return true;
     return await lastValueFrom(
       this.transactionService.send('createTransaction', createTransactionDto)
     )
-      .then(async (respone) => {
-        const payDebt = await lastValueFrom(
-          this.debtService.send('updateDebt', { id: debtId, status: 'paid' })
-        );
-        console.log(payDebt);
-
+      .then(async (response) => {
         return <BaseReponse>{
           status: HttpStatus.CREATED,
           message: 'success',
-          data: respone,
+          data: response,
         };
       })
       .catch((e) => {
@@ -184,18 +183,27 @@ export class DebtController {
 
     return await this.mailerService.send(mail);
   }
-  @Patch('updateBalance/:transId')
+  @Patch('updateBalance/:debtId')
   @Authorization(true)
-  updateBalance(
-    @Param('transId') id: string,
+  async updateBalance(
+    @Param('debtId') id: string,
     @Body() updateBalanceDto: UpdateBalanceDto
   ) {
-    updateBalanceDto.id = id;
-    return lastValueFrom(
+    const debt = await lastValueFrom(this.debtService.send('findOneDebt', id));
+    updateBalanceDto.id = debt?.transId;
+    return await lastValueFrom(
       this.transactionService.send('setBalance', updateBalanceDto)
-    ).catch((e) => {
-      throw new BadRequestException('Already update balance');
-    });
+    )
+      .then((response) => {
+        console.log(response);
+
+        return lastValueFrom(
+          this.debtService.send('updateDebt', { id, status: 'paid' })
+        );
+      })
+      .catch((e) => {
+        throw new BadRequestException('Already update balance');
+      });
   }
 
   @Get('findAll')
@@ -237,11 +245,13 @@ export class DebtController {
   async cancelRemindDebt(
     @Body() updateDebtDto: CancelDebtDto,
     @Req() req,
-    @Param() id: string
+    @Param('id') id: string
   ) {
     updateDebtDto.id = id;
     if (!updateDebtDto.cancelReason)
       throw new BadRequestException('Cancel reason should be not empty!');
+
+    console.log({ updateDebtDto, id });
 
     updateDebtDto.status = 'canceled';
     return await lastValueFrom(
