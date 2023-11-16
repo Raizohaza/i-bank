@@ -1,12 +1,14 @@
 import mongoose, { ObjectId } from 'mongoose';
 
-export interface ITransactonSchema extends mongoose.Document {
+export interface ITransactonSchema {
   //basic info
   customerId: ObjectId;
-  fromAccount: string;
+  fromAccount: ObjectId;
   fromName?: string;
-  toAccount: string;
+  toAccount: ObjectId;
   toName?: string;
+  fromAccountNumber?: string;
+  toAccountNumber?: string;
   tellerEmpployeeId: string;
   //details
   amount: number;
@@ -22,17 +24,21 @@ export interface ITransactonSchema extends mongoose.Document {
   sign?: string;
   status: string;
 }
-export const TransactionSchema = new mongoose.Schema<ITransactonSchema>(
+export const TransactionSchema = new mongoose.Schema<
+  ITransactonSchema & mongoose.Document
+>(
   {
     amount: Number,
     type: String,
     // transTime: Date,
     tellerEmpployeeId: String,
     customerId: mongoose.Schema.Types.ObjectId,
-    fromAccount: String,
+    fromAccount: mongoose.Schema.Types.ObjectId,
     fromName: String,
-    toAccount: String,
+    toAccount: mongoose.Schema.Types.ObjectId,
     toName: String,
+    fromAccountNumber: String,
+    toAccountNumber: String,
     OTPToken: String,
     OTPVerify: Boolean,
     fee: Number,

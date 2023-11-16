@@ -43,4 +43,8 @@ export class CreateTransactionDto {
   OTPToken: string;
   @ApiHideProperty()
   OTPVerify: boolean;
+  @ApiHideProperty()
+  fromAccountNumber?: string;
+  @ApiHideProperty()
+  toAccountNumber?: string;
 }

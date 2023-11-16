@@ -1,7 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { Transport, TcpOptions } from '@nestjs/microservices';
-import { ConfigService } from './config/config.service';
+import { ConfigService } from '@i-bank/utils';
 import { DebtModule } from './debt/debt.module';
 
 async function bootstrap() {

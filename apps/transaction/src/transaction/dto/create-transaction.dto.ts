@@ -1,9 +1,15 @@
+import mongoose from 'mongoose';
+
 export class CreateTransactionDto {
   customerId: string;
-  fromAccount: string;
+  fromAccount: mongoose.Schema.Types.ObjectId;
   fromName?: string;
-  toAccount: string;
+  toAccount: mongoose.Schema.Types.ObjectId;
   toName?: string;
+
+  fromAccountNumber?: string;
+  toAccountNumber?: string;
+
   tellerEmpployeeId: string;
   //details
   amount: number;

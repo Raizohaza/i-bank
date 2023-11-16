@@ -1,5 +1,5 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import { Model } from 'mongoose';
+import mongoose, { Model, PipelineStage, Types } from 'mongoose';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { ITransaction } from './transaction.interface';
@@ -42,6 +42,7 @@ export class TransactionService {
   }
 
   async setBalance({ id, code }: { id: string; code: string }) {
+    mongoose.isValidObjectId;
     const transaction = await this.findOne(id);
     if (code !== transaction.OTPToken.toString())
       throw new UnauthorizedException('Invalid Code');
@@ -92,10 +93,116 @@ export class TransactionService {
 
     return await this.model.find(query, { sort: { updateAt: -1 } }).lean();
   }
+  async findAllByAggregate(findAllDTO: FindAllDTO) {
+    const query: any = { $and: [] };
+    if (findAllDTO.bank) query.bank = findAllDTO.bank;
+
+    if (findAllDTO.from)
+      query.$and.push({
+        updatedAt: {
+          $gte: new Date(new Date(findAllDTO.from).setHours(0, 0, 0, 0)),
+        },
+      });
+
+    if (findAllDTO.to)
+      query.$and.push({
+        updatedAt: {
+          $lte: new Date(new Date(findAllDTO.to).setHours(23, 59, 59, 999)),
+        },
+      });
+    if (!query.$and.length) delete query.$and;
+    console.log({
+      query: query.$and,
+      $lte: query.$and[0],
+      $gte: query.$and[1],
+    });
+
+    return await this.model.aggregate([
+      { $match: query },
+      ...this.generateLookup(),
+    ]);
+  }
+  generateLookup(): PipelineStage[] {
+    return [
+      {
+        $sort: {
+          updatedAt: -1,
+        },
+      },
+      {
+        $lookup: {
+          from: 'Accounts',
+          let: {
+            fromAccount: '$fromAccount',
+            toAccount: '$toAccount',
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $or: [
+                    {
+                      $eq: ['$_id', '$$fromAccount'],
+                    },
+                    {
+                      $eq: ['$_id', '$$toAccount'],
+                    },
+                  ],
+                },
+              },
+            },
+            {
+              $project: {
+                fromAccountNumber: '$accountNumber',
+                toAccountNumber: '$accountNumber',
+              },
+            },
+          ],
+          as: 'Accounts',
+        },
+      },
+      {
+        $replaceRoot: {
+          newRoot: {
+            $mergeObjects: [
+              {
+                $arrayElemAt: ['$Accounts', 0],
+              },
+              '$$ROOT',
+            ],
+          },
+        },
+      },
+      {
+        $project: {
+          Accounts: 0,
+        },
+      },
+    ];
+  }
   async findAllByCustomerId(id) {
-    const data = await this.model
-      .find({ customerId: id }, {}, { sort: { updatedAt: -1 } })
-      .lean();
+    const allAccount = await lastValueFrom(
+      this.accountService.send('account_get_by_user_id', id)
+    );
+    console.log(allAccount, id);
+    const accounts = allAccount.data.map(
+      (account) => new Types.ObjectId(account.id)
+    );
+    console.log(accounts);
+    const query = {
+      $or: [
+        { fromAccount: { $in: accounts } },
+        { toAccount: { $in: accounts } },
+      ],
+    };
+    console.log(query);
+
+    const data = await this.model.aggregate([
+      {
+        $match: query, //{ customerId: new Types.ObjectId(id) },
+      },
+      ...this.generateLookup(),
+    ]);
 
     return data;
   }

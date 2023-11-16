@@ -43,4 +43,8 @@ export class CreateTransactionAbineDto {
   OTPVerify?: boolean;
   @ApiHideProperty()
   sign?: string;
+  @ApiHideProperty()
+  fromAccountNumber?: string;
+  @ApiHideProperty()
+  toAccountNumber?: string;
 }

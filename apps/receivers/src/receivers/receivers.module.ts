@@ -3,10 +3,9 @@ import { ReceiversService } from './receivers.service';
 import { ReceiversController } from './receivers.controller';
 import { ClientProxyFactory } from '@nestjs/microservices';
 import { MongooseModule } from '@nestjs/mongoose';
-import { MongoConfigService } from '../config/mongo-config.service';
 import { ReceiverSchema } from './entities/receiver.entity';
-import { ConfigService } from '../config/config.service';
-
+import { ConfigService } from '@i-bank/utils';
+import { MongoConfigService } from '@i-bank/utils';
 @Module({
   imports: [
     ConfigService,

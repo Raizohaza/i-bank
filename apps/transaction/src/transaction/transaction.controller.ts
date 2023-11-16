@@ -14,11 +14,11 @@ export class TransactionController {
     @Payload() createTransactionDto: CreateTransactionDto
   ) {
     const fromAccount = await this.transactionService.findByAccountNumber(
-      createTransactionDto.fromAccount
+      createTransactionDto.fromAccountNumber
     );
 
     const toAccount = await this.transactionService.findByAccountNumber(
-      createTransactionDto.toAccount
+      createTransactionDto.toAccountNumber
     );
     if (fromAccount) createTransactionDto.fromAccount = fromAccount._id;
     if (toAccount) createTransactionDto.toAccount = toAccount._id;
@@ -46,7 +46,7 @@ export class TransactionController {
   @MessagePattern('createTransactionAbine')
   async createAbine(@Payload() createTransactionDto: CreateTransactionDto) {
     const fromAccount = await this.transactionService.findByAccountNumber(
-      createTransactionDto.fromAccount
+      createTransactionDto.fromAccountNumber
     );
     if (fromAccount) createTransactionDto.fromAccount = fromAccount._id;
     const validateTrans = await this.transactionService.validateTransaction(
@@ -59,9 +59,28 @@ export class TransactionController {
     );
   }
 
+  @MessagePattern('createTransactionAbineOut')
+  async createAbineOut(@Payload() createTransactionDto: CreateTransactionDto) {
+    const fromAccount = await this.transactionService.findByAccountNumber(
+      createTransactionDto.fromAccountNumber
+    );
+    if (fromAccount) createTransactionDto.fromAccount = fromAccount._id;
+    const validateTrans = await this.transactionService.validateTransaction(
+      createTransactionDto
+    );
+    delete createTransactionDto.toAccount;
+    if (validateTrans.validated)
+      return await this.transactionService.createAbine(createTransactionDto);
+    throw new BadRequestException(
+      `Validation failed: ${validateTrans.message}`
+    );
+  }
+
   @MessagePattern('findAllTransaction')
   findAll(findAllDTO: FindAllDTO) {
-    return this.transactionService.findAll(findAllDTO);
+    console.log(findAllDTO);
+
+    return this.transactionService.findAllByAggregate(findAllDTO);
   }
 
   @MessagePattern('findAllTransactionByCustomerId')

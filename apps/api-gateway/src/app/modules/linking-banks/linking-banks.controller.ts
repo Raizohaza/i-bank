@@ -119,58 +119,58 @@ export class LinkingBanksController {
     const TRANSFER = '/api/external/transfer';
     const now = Date.now().toString();
     const feePayer: 'SENDER' | 'RECIPIENT' = 'SENDER';
-    const fetchData = await fetch(HOME + '/public.pem');
-    const publicKey: KeyLike = await fetchData.text();
-    const sign = signature(
-      Buffer.from(
-        JSON.stringify({
-          fromAccountNumber: tranferDTO.fromAccount,
-          toAccountNumber: tranferDTO.toAccount,
-          amount: tranferDTO.amount,
-          content: tranferDTO.contentTransaction,
-          feePayer,
-        })
-      )
-    ).toString('base64');
+    // const fetchData = await fetch(HOME + '/public.pem');
+    // const publicKey: KeyLike = await fetchData.text();
+    // const sign = signature(
+    //   Buffer.from(
+    //     JSON.stringify({
+    //       fromAccountNumber: tranferDTO.fromAccount,
+    //       toAccountNumber: tranferDTO.toAccount,
+    //       amount: tranferDTO.amount,
+    //       content: tranferDTO.contentTransaction,
+    //       feePayer,
+    //     })
+    //   )
+    // ).toString('base64');
 
-    const encryptedData = {
-      encrypted: abineEncrypt(
-        {
-          fromAccountNumber: tranferDTO.fromAccount,
-          toAccountNumber: tranferDTO.toAccount,
-          amount: tranferDTO.amount,
-          content: tranferDTO.contentTransaction,
-          feePayer,
-        },
-        publicKey
-      ),
-      signature: sign,
-    };
-    console.log({
-      headers: {
-        Auth: hash(TRANSFER + now + process.env.SECRET_KEY),
-        Time: now,
-      },
-      body: JSON.stringify({ ...encryptedData }),
-    });
+    // const encryptedData = {
+    //   encrypted: abineEncrypt(
+    //     {
+    //       fromAccountNumber: tranferDTO.fromAccount,
+    //       toAccountNumber: tranferDTO.toAccount,
+    //       amount: tranferDTO.amount,
+    //       content: tranferDTO.contentTransaction,
+    //       feePayer,
+    //     },
+    //     publicKey
+    //   ),
+    //   signature: sign,
+    // };
+    // console.log({
+    //   headers: {
+    //     Auth: hash(TRANSFER + now + process.env.SECRET_KEY),
+    //     Time: now,
+    //   },
+    //   body: JSON.stringify({ ...encryptedData }),
+    // });
     const newTrans = await this.createTransaction(tranferDTO, req);
 
-    const res = await fetch(HOME + TRANSFER, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Auth: hash(TRANSFER + now + process.env.SECRET_KEY),
-        Time: now,
-      },
-      body: JSON.stringify({ ...encryptedData }),
-    });
-    console.log(res);
+    // const res = await fetch(HOME + TRANSFER, {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     Auth: hash(TRANSFER + now + process.env.SECRET_KEY),
+    //     Time: now,
+    //   },
+    //   body: JSON.stringify({ ...encryptedData }),
+    // });
+    // console.log(res);
 
-    const remoteRequest = res.json();
+    // const remoteRequest = res.json();
     const response = new BaseReponse();
     response.data = {
       newTrans,
-      remoteRequest,
+      // remoteRequest,
     };
     return response;
   }
@@ -180,12 +180,15 @@ export class LinkingBanksController {
       tranferDTO.customerId = customer.id;
     }
     if (!tranferDTO.fromName) tranferDTO.fromName = customer.name;
+
+    tranferDTO.fromAccountNumber = tranferDTO.fromAccount;
+    tranferDTO.toAccountNumber = tranferDTO.toAccount;
     tranferDTO.OTPToken = Math.floor(
       100000 + Math.random() * 900000
     ).toString();
     await this.sendOTP(tranferDTO, customer);
     const data = await lastValueFrom(
-      this.transactionService.send('createTransactionAbine', tranferDTO)
+      this.transactionService.send('createTransactionAbineOut', tranferDTO)
     );
     return data;
   }
@@ -246,6 +249,8 @@ export class LinkingBanksController {
   @BasicAuthorization(true)
   @Verify(true)
   async transferExternalIn(@Body() tranferDTO: CreateTransactionAbineDto) {
+    tranferDTO.fromAccountNumber = tranferDTO.fromAccount;
+    tranferDTO.toAccountNumber = tranferDTO.toAccount;
     const data = await lastValueFrom(
       this.transactionService.send('createTransactionAbine', tranferDTO)
     );

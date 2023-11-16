@@ -4,7 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { TokenController } from './token.controller';
 import { TokenService } from './services/token.service';
 import { JwtConfigService } from './services/config/jwt-config.service';
-import { MongoConfigService } from './services/config/mongo-config.service';
+import { MongoConfigService } from '@i-bank/utils';
 import { TokenSchema } from './schemas/token.schema';
 
 @Module({

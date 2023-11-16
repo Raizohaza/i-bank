@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { CustomerModule } from './customer.module';
 import { Transport, TcpOptions } from '@nestjs/microservices';
 
-import { ConfigService } from './services/config/config.service';
+import { ConfigService } from '@i-bank/utils';
 
 async function bootstrap() {
   const app = await NestFactory.createMicroservice(CustomerModule, {

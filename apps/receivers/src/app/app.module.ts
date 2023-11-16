@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigService } from '../config/config.service';
+import { ConfigService } from '@i-bank/utils';
 import { ReceiversModule } from '../receivers/receivers.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';

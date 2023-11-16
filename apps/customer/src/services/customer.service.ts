@@ -1,8 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-
-import { ConfigService } from './config/config.service';
+import { ConfigService } from '@i-bank/utils';
 import { ICustomer } from '../interfaces/customer.interface';
 import { ICustomerLink } from '../interfaces/customer-link.interface';
 import { ClientProxy } from '@nestjs/microservices';

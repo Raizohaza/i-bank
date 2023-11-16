@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { DebtService } from './debt.service';
 import { DebtController } from './debt.controller';
-import { ConfigService } from '../config/config.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { MongoConfigService } from '../config/mongo-config.service';
+import { ConfigService } from '@i-bank/utils';
+import { MongoConfigService } from '@i-bank/utils';
 import { DebtSchema } from './entities/debt.entity';
 import { ClientProxyFactory } from '@nestjs/microservices';
 

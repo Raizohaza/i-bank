@@ -3,11 +3,11 @@ import { ClientProxyFactory } from '@nestjs/microservices';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CustomerController } from './customer.controller';
 import { CustomerService } from './services/customer.service';
-import { MongoConfigService } from './services/config/mongo-config.service';
-import { ConfigService } from './services/config/config.service';
+import { ConfigService } from '@i-bank/utils';
+import { MongoConfigService } from '@i-bank/utils';
 import { CustomerSchema } from './schemas/customer.schema';
 import { CustomerLinkSchema } from './schemas/customer-link.schema';
-import { SendgridService } from 'libs/utils/src/lib/sendgrid.service';
+import { SendgridService } from '@i-bank/utils';
 import { UtilsModule } from '@i-bank/utils';
 @Module({
   imports: [

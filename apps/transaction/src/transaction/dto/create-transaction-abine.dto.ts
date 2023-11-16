@@ -1,9 +1,14 @@
-export class CreateTransactionAbineDto {
-  customerId: string;
-  fromAccount: string;
+import { ObjectId } from 'mongoose';
+import { ITransactonSchema } from '../entities/transaction.entity';
+
+export class CreateTransactionAbineDto implements ITransactonSchema {
+  customerId: ObjectId;
+  fromAccount: ObjectId;
   fromName?: string;
-  toAccount: string;
+  toAccount: ObjectId;
   toName?: string;
+  fromAccountNumber?: string;
+  toAccountNumber?: string;
   tellerEmpployeeId: string;
   //details
   amount: number;
@@ -15,4 +20,6 @@ export class CreateTransactionAbineDto {
   //token
   OTPToken: string;
   OTPVerify: boolean;
+  bank: string;
+  status: string;
 }

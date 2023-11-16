@@ -2,8 +2,8 @@ import { Module } from '@nestjs/common';
 import { LinkingBankService } from './linking-bank.service';
 import { LinkingBankController } from './linking-bank.controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import { MongoConfigService } from '../config/mongo-config.service';
-import { ConfigService } from '../config/config.service';
+import { ConfigService } from '@i-bank/utils';
+import { MongoConfigService } from '@i-bank/utils';
 import { ClientProxyFactory } from '@nestjs/microservices';
 
 @Module({

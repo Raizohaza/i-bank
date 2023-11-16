@@ -108,6 +108,12 @@ export class TransactionController {
       100000 + Math.random() * 900000
     ).toString();
     await this.sendOTP(createTransactionDto, customer);
+
+    createTransactionDto.fromAccountNumber = createTransactionDto.fromAccount;
+    createTransactionDto.toAccountNumber = createTransactionDto.toAccount;
+    delete createTransactionDto.fromAccount;
+    delete createTransactionDto.toAccount;
+
     // return true;
     return await lastValueFrom(
       this.transactionService.send(
