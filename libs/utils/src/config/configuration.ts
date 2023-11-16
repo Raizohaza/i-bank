@@ -7,7 +7,7 @@ export class ConfigService {
     // this.envConfig.port = parseInt(process.env.PORT, 10) || 3000;
     this.envConfig['X_SECRET'] = process.env['X_SECRET'] || 'abc';
     this.envConfig.SECRET_KEY = process.env.SECRET_KEY;
-    this.envConfig.SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
+    this.envConfig.SENDGRID_API_KEY = process.env.SENDGRID_API_KEY || '';
     this.envConfig.customerService = {
       transport: Transport.TCP,
       options: {
