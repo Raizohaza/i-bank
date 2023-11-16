@@ -6,8 +6,10 @@ export class ConfigService {
     this.envConfig = {};
     // this.envConfig.port = parseInt(process.env.PORT, 10) || 3000;
     this.envConfig['X_SECRET'] = process.env['X_SECRET'] || 'abc';
-    this.envConfig.SECRET_KEY = process.env.SECRET_KEY;
-    this.envConfig.SENDGRID_API_KEY = process.env.SENDGRID_API_KEY || '';
+    this.envConfig.SECRET_KEY = process.env.SECRET_KEY || 'SECRET_KEY';
+    this.envConfig.SENDGRID_API_KEY =
+      process.env.SENDGRID_API_KEY ||
+      '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';
     this.envConfig.customerService = {
       transport: Transport.TCP,
       options: {

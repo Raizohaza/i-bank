@@ -167,13 +167,13 @@ export class DebtController {
     if (!createTransactionDto.customerId) {
       createTransactionDto.customerId = customer.id;
     }
-    const sgTemplate = 'd-e12e8d5e02074d79b04502f2aa32e7fd';
+    const sgTemplate = 'd-8f6fe985b8334f63ab19a399b22528a0';
     const mail: SendGrid.MailDataRequired = {
       to: customer.email,
       subject: 'OTP trancational pay debt confirmation',
-      from: 'laptrinhweb100@gmail.com',
+      from: 'toanphamhcmus@gmail.com',
       dynamicTemplateData: {
-        email: 'laptrinhweb100@gmail.com',
+        email: 'toanphamhcmus@gmail.com',
         headerText: 'confirm your pay debt',
         code: createTransactionDto.OTPToken,
       },
