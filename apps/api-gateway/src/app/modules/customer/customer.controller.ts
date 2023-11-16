@@ -183,12 +183,15 @@ export class CustomerController {
           uid: getCustomerResponse.data.id,
         })
       );
+    console.log(createTokenResponse);
 
     return {
       message: createTokenResponse.message,
       data: {
         token: createTokenResponse.token,
         refreshToken: createTokenResponse.refreshToken,
+        tokenExp: createTokenResponse.tokenExp,
+        refreshTokenExp: createTokenResponse.refreshTokenExp,
       },
     };
   }

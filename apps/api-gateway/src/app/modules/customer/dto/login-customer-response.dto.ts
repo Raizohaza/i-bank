@@ -9,5 +9,7 @@ export class LoginCustomerResponseDto extends BaseReponse {
   data: {
     token: string;
     refreshToken?: string;
+    tokenExp?: string;
+    refreshTokenExp?: string;
   };
 }

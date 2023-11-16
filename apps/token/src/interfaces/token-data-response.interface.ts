@@ -1,5 +1,9 @@
 export interface ITokenDataResponse {
   status: number;
   message: string;
-  data: { customerId: string } | null;
+  data: {
+    customerId: string;
+    tokenExp?: string;
+    refreshTokenExp?: string;
+  } | null;
 }

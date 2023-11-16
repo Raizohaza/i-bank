@@ -19,8 +19,10 @@ export class TokenController {
           status: HttpStatus.CREATED,
           message: 'token_create_success',
           token: createResult.token,
+          refreshToken: createResult.refreshToken,
+          tokenExp: createResult.tokenExp,
+          refreshTokenExp: createResult.refreshTokenExp,
         };
-        console.log(createResult);
       } catch (e) {
         result = {
           status: HttpStatus.BAD_REQUEST,
@@ -29,7 +31,6 @@ export class TokenController {
         };
       }
     } else {
-      console.log(data);
       result = {
         status: HttpStatus.BAD_REQUEST,
         message: 'token_create_bad_request',
@@ -70,8 +71,6 @@ export class TokenController {
 
   @MessagePattern('token_refresh')
   public async refreshToken(data: { uid: string; refreshToken: string }) {
-    console.log(data);
-
     const tokenData = await this.tokenService.refreshTokens(data);
     return {
       status: tokenData ? HttpStatus.OK : HttpStatus.UNAUTHORIZED,

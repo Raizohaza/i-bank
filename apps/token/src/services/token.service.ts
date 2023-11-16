@@ -28,15 +28,32 @@ export class TokenService {
           uid: uid,
         },
         {
-          expiresIn: '7d',
+          expiresIn: '1d',
         },
       ),
     ]);
+    const tokenExp = (await this.jwtService.decode(token)) as {
+      exp: number;
+      uid: unknown;
+    };
+    const refreshTokenExp = (await this.jwtService.decode(token)) as {
+      exp: number;
+      uid: unknown;
+    };
+    console.log({
+      uid: uid,
+      token,
+      refreshToken,
+      tokenExp: tokenExp.exp,
+      refreshTokenExp: refreshTokenExp.exp,
+    });
 
     return await new this.tokenModel({
       uid: uid,
       token,
       refreshToken,
+      tokenExp: tokenExp.exp,
+      refreshTokenExp: refreshTokenExp.exp,
     }).save();
   }
   async refreshTokens({
@@ -47,31 +64,23 @@ export class TokenService {
     refreshToken: string;
   }): Promise<IToken> {
     const tokenByUid = await this.tokenModel.findOne({ uid: uid });
-    console.log({ tokenByUid, uid });
+    // console.log({ tokenByUid, uid });
 
     if (!tokenByUid || !tokenByUid.refreshToken)
       throw new ForbiddenException('Access Denied');
-    console.log(tokenByUid);
+    // console.log(tokenByUid);
 
     const refreshTokenMatches = tokenByUid.refreshToken === refreshToken;
 
     if (!refreshTokenMatches) throw new ForbiddenException('Access Denied');
     const tokens = await this.createToken(uid);
-    await this.updateRefreshToken(tokenByUid.id, tokens.refreshToken);
     return tokens;
   }
-  async updateRefreshToken(id: string, refreshToken: string) {
-    await this.tokenModel.updateOne(
-      { _id: id },
-      {
-        refreshToken: refreshToken,
-      },
-    );
-  }
+
   public async deleteTokenForUid(
     uid: string,
   ): Promise<Query<unknown, unknown>> {
-    return await this.tokenModel.remove({
+    return await this.tokenModel.deleteMany({
       uid: uid,
     });
   }
@@ -95,6 +104,7 @@ export class TokenService {
         } else {
           result = {
             uid: tokenData.uid,
+            exp: tokenData.exp,
           };
         }
       } catch (e) {
