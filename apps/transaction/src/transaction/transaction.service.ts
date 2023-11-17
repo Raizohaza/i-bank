@@ -76,7 +76,7 @@ export class TransactionService {
   }
 
   async createAbine(createTransactionDto: CreateTransactionDto) {
-    createTransactionDto.bank = 'Abine';
+    createTransactionDto.bank = 'CipherSafe';
     const newTrans = await this.model.create(createTransactionDto);
     return await newTrans;
   }

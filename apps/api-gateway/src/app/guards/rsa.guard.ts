@@ -20,7 +20,7 @@ export class RsaGuard implements CanActivate {
     if (!verify) {
       return true;
     }
-    const HOME = 'https://abine.fly.dev';
+    const HOME = 'https://cfbank-backend-raizohaza.cloud.okteto.net';
     const request = context.switchToHttp().getRequest();
     const data = decrypt(request.body.encrypted);
     if (!data) {
@@ -29,11 +29,9 @@ export class RsaGuard implements CanActivate {
     const verifyData = Buffer.from(data.toString('utf-8'));
     const abineSign = request.body.sign;
     const sign = Buffer.from(request.body.sign, 'base64');
-    const fetchData = await fetch(HOME + '/public.pem');
+    const fetchData = await fetch(HOME + '/linking-banks/public.pem');
     const publicKey: KeyLike = await fetchData.text();
     const bfPublicKey: Buffer = Buffer.from(publicKey.toString());
-
-    console.log({ data: verifyData, sign });
 
     if (!isVerifiedWithSign({ data: verifyData, sign, publicKey: bfPublicKey }))
       throw new UnauthorizedException('Signature invalid!');
@@ -43,8 +41,8 @@ export class RsaGuard implements CanActivate {
     const decryptedData = JSON.parse(data.toString());
 
     request.body = decryptedData;
-    request.abineSign = abineSign;
-    console.log(request.body);
+    request.body.sign = abineSign;
+    console.log('Succeed!!!!!!!!!!', request.body);
 
     return true;
   }

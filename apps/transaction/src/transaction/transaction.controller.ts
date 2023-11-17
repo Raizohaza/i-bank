@@ -45,18 +45,14 @@ export class TransactionController {
 
   @MessagePattern('createTransactionAbine')
   async createAbine(@Payload() createTransactionDto: CreateTransactionDto) {
-    const fromAccount = await this.transactionService.findByAccountNumber(
-      createTransactionDto.fromAccountNumber
+    console.log({ createTransactionAbine: createTransactionDto });
+
+    const toAccount = await this.transactionService.findByAccountNumber(
+      createTransactionDto.toAccountNumber
     );
-    if (fromAccount) createTransactionDto.fromAccount = fromAccount._id;
-    const validateTrans = await this.transactionService.validateTransaction(
-      createTransactionDto
-    );
-    if (validateTrans.validated)
-      return await this.transactionService.createAbine(createTransactionDto);
-    throw new BadRequestException(
-      `Validation failed: ${validateTrans.message}`
-    );
+    if (toAccount) createTransactionDto.fromAccount = toAccount._id;
+    delete createTransactionDto.fromAccount;
+    return await this.transactionService.createAbine(createTransactionDto);
   }
 
   @MessagePattern('createTransactionAbineOut')

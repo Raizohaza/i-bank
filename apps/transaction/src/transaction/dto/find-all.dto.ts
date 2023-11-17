@@ -5,14 +5,14 @@ export class FindAllDTO extends PartialType(CreateTransactionDto) {
   @ApiProperty({
     required: false,
     default: 'iBank',
-    enum: ['iBank', 'Abine'],
+    enum: ['iBank', 'Abine', 'CipherSafe'],
   })
   bank: string;
 
   @ApiProperty({
     required: false,
     default: Date.now(),
-    enum: ['iBank', 'Abine'],
+    enum: ['iBank', 'Abine', 'CipherSafe'],
   })
   from: Date;
   @ApiProperty({

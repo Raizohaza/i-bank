@@ -4,7 +4,7 @@ export class FindAllDTO {
   @ApiProperty({
     required: false,
     default: 'iBank',
-    enum: ['iBank', 'Abine'],
+    enum: ['iBank', 'Abine', 'CipherSafe'],
   })
   bank: string;
 

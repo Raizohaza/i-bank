@@ -71,16 +71,6 @@ export class LinkingBanksController {
   @ApiHeader({ name: 'x-api-key' })
   @ApiHeader({ name: 'x-time' })
   @BasicAuthorization(true)
-  findOne(@Param('accountNum') accountNum: string) {
-    return lastValueFrom(
-      this.linkingBanksService.send('remoteFindByAccountNumber', accountNum)
-    );
-  }
-
-  @Post('transfer/:accountNum')
-  @ApiHeader({ name: 'x-api-key' })
-  @ApiHeader({ name: 'x-time' })
-  @BasicAuthorization(true)
   async tranferToLinkedBank(@Param('accountNum') accountNum: string) {
     return await lastValueFrom(
       this.linkingBanksService.send('remoteFindByAccountNumber', accountNum)
@@ -90,9 +80,9 @@ export class LinkingBanksController {
   @Get('external/account/:accountNum')
   // @BasicAuthorization(true)
   findOneExternal(@Param('accountNum') accountNum: string) {
-    const HOME = 'https://abine.fly.dev';
-    const ACCOUNT = `/api/external/account/${accountNum}`; //1234567891011
-    const SECRET_KEY = this.config.get('SECRET_KEY');
+    const HOME = 'https://cfbank-backend-raizohaza.cloud.okteto.net';
+    const ACCOUNT = `/linking-banks/account/${accountNum}`; //1234567891011
+    const SECRET_KEY = this.config.get('X_SECRET');
 
     const getAccountInfo = async () => {
       const now = Date.now().toString();
@@ -100,8 +90,8 @@ export class LinkingBanksController {
       const res = await fetch(HOME + ACCOUNT, {
         headers: {
           'Content-Type': 'application/json',
-          Auth: hash(ACCOUNT + now + SECRET_KEY),
-          Time: now,
+          'x-api-key': hash(ACCOUNT + now + SECRET_KEY),
+          'x-time': now,
         },
       });
       return res.json();
@@ -115,62 +105,65 @@ export class LinkingBanksController {
     @Body() tranferDTO: CreateTransactionAbineDto,
     @Req() req
   ) {
-    const HOME = 'https://abine.fly.dev';
-    const TRANSFER = '/api/external/transfer';
+    const HOME = 'https://cfbank-backend-raizohaza.cloud.okteto.net';
+    // const HOME = ' https://3713-2001-ee0-d789-5790-4489-dd18-2b2f-ae09.ngrok-free.app';
+    const SECRET_KEY = this.config.get('X_SECRET');
+
+    const TRANSFER = '/linking-banks/external/transfer/in';
     const now = Date.now().toString();
     const feePayer: 'SENDER' | 'RECIPIENT' = 'SENDER';
-    // const fetchData = await fetch(HOME + '/public.pem');
-    // const publicKey: KeyLike = await fetchData.text();
-    // const sign = signature(
-    //   Buffer.from(
-    //     JSON.stringify({
-    //       fromAccountNumber: tranferDTO.fromAccount,
-    //       toAccountNumber: tranferDTO.toAccount,
-    //       amount: tranferDTO.amount,
-    //       content: tranferDTO.contentTransaction,
-    //       feePayer,
-    //     })
-    //   )
-    // ).toString('base64');
+    const fetchData = await fetch(HOME + '/linking-banks/public.pem');
+    const publicKey: KeyLike = await fetchData.text();
+    const sign = signature(
+      Buffer.from(
+        JSON.stringify({
+          fromAccountNumber: tranferDTO.fromAccount,
+          toAccountNumber: tranferDTO.toAccount,
+          amount: tranferDTO.amount,
+          content: tranferDTO.contentTransaction,
+          feePayer,
+        })
+      )
+    ).toString('base64');
 
-    // const encryptedData = {
-    //   encrypted: abineEncrypt(
-    //     {
-    //       fromAccountNumber: tranferDTO.fromAccount,
-    //       toAccountNumber: tranferDTO.toAccount,
-    //       amount: tranferDTO.amount,
-    //       content: tranferDTO.contentTransaction,
-    //       feePayer,
-    //     },
-    //     publicKey
-    //   ),
-    //   signature: sign,
-    // };
-    // console.log({
-    //   headers: {
-    //     Auth: hash(TRANSFER + now + process.env.SECRET_KEY),
-    //     Time: now,
-    //   },
-    //   body: JSON.stringify({ ...encryptedData }),
-    // });
+    const encryptedData = {
+      encrypted: abineEncrypt(
+        {
+          fromAccountNumber: tranferDTO.fromAccount,
+          toAccountNumber: tranferDTO.toAccount,
+          amount: tranferDTO.amount,
+          content: tranferDTO.contentTransaction,
+          feePayer,
+        },
+        publicKey
+      ),
+      sign,
+    };
+    console.log({
+      headers: {
+        'x-api-key': hash(TRANSFER + now + SECRET_KEY),
+        'x-time': now,
+      },
+      body: JSON.stringify({ ...encryptedData }),
+    });
     const newTrans = await this.createTransaction(tranferDTO, req);
 
-    // const res = await fetch(HOME + TRANSFER, {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     Auth: hash(TRANSFER + now + process.env.SECRET_KEY),
-    //     Time: now,
-    //   },
-    //   body: JSON.stringify({ ...encryptedData }),
-    // });
-    // console.log(res);
+    const res = await fetch(HOME + TRANSFER, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': hash(TRANSFER + now + SECRET_KEY),
+        'x-time': now,
+      },
+      body: JSON.stringify({ ...encryptedData }),
+    });
+    console.log(res);
 
-    // const remoteRequest = res.json();
+    const remoteRequest = res.text();
     const response = new BaseReponse();
     response.data = {
       newTrans,
-      // remoteRequest,
+      remoteRequest,
     };
     return response;
   }
@@ -249,8 +242,6 @@ export class LinkingBanksController {
   @BasicAuthorization(true)
   @Verify(true)
   async transferExternalIn(@Body() tranferDTO: CreateTransactionAbineDto) {
-    tranferDTO.fromAccountNumber = tranferDTO.fromAccount;
-    tranferDTO.toAccountNumber = tranferDTO.toAccount;
     const data = await lastValueFrom(
       this.transactionService.send('createTransactionAbine', tranferDTO)
     );
