@@ -109,6 +109,8 @@ export class AccountController {
     @Req() request: IAuthorizedRequest
   ): Promise<CreateAccountReponseDto> {
     body.customerId = request.customer.id;
+    body.accountNumber = new Date().getTime().toString();
+
     const accountResponse: IServiceAccount = await firstValueFrom(
       this.accountService.send('accountCreate', body)
     );

@@ -11,6 +11,19 @@ export class AccountService {
     @InjectModel('Account') private readonly accountModel: Model<IAccount>
   ) {}
   async create(createAccountDto: CreateAccountDto) {
+    if (createAccountDto.type === 'PAYROLL') {
+      const existingAccount = await this.accountModel.findOne({
+        customerId: createAccountDto.customerId,
+        type: 'PAYROLL',
+      });
+
+      if (existingAccount) {
+        return {
+          errors: [`Customer already has a PAYROLL account.`],
+          message: `Customer already has a PAYROLL account.`,
+        };
+      }
+    }
     const newAccount = new this.accountModel(createAccountDto);
     return await newAccount.save();
   }
