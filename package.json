@@ -27,7 +27,7 @@
   },
   "private": true,
   "dependencies": {
-    "@mongodb-js/zstd": "^1.0.0",
+    "@mongodb-js/zstd": "^2.0.0",
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^2.2.0",
     "@nestjs/core": "^9.0.0",
@@ -46,12 +46,14 @@
     "aws-crt": "^1.15.5",
     "aws4": "^1.11.0",
     "bcrypt": "^5.1.0",
-    "bson-ext": "^4.0.3",
+    "bson": "^6.10.1",
+    "chalk": "^4.1.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "concurrently": "^7.6.0",
     "dotenv": "^16.0.3",
     "moment": "^2.29.4",
+    "mongodb": "^6.12.0",
     "mongoose": "^6.7.5",
     "node-fetch": "^2.6.1",
     "passport": "^0.6.0",
@@ -59,10 +61,9 @@
     "passport-local": "^1.0.0",
     "passport-strategy": "^1.0.0",
     "reflect-metadata": "^0.1.13",
-    "rimraf": "^3.0.2",
+    "rimraf": "^4.0.2",
     "rxjs": "^7.6.0",
-    "snappy": "^7.2.2",
-    "tslib": "^2.3.0"
+    "snappy": "^7.2.2"
   },
   "devDependencies": {
     "@nestjs/schematics": "^9.0.0",
@@ -81,7 +82,7 @@
     "@typescript-eslint/eslint-plugin": "^5.46.0",
     "@typescript-eslint/parser": "^5.46.0",
     "dotenv": "^16.0.3",
-    "eslint": "~8.15.0",
+    "eslint": "^8.15.0",
     "eslint-config-prettier": "8.1.0",
     "eslint-plugin-prettier": "^4.2.1",
     "jest": "28.1.1",
@@ -94,6 +95,7 @@
     "ts-node": "10.9.1",
     "tsc-watch": "^5.0.3",
     "tsconfig-paths": "^4.1.1",
+    "tslib": "^2.8.1",
     "typescript": "~4.8.2"
   }
 }
