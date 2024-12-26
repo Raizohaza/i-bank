@@ -14,7 +14,7 @@ export class CustomerController {
   constructor(
     private readonly customerService: CustomerService,
     @Inject('MAILER_SERVICE') private readonly mailerServiceClient
-  ) {}
+  ) { }
 
   @MessagePattern('customer_search_by_credentials')
   public async searchCustomerByCredentials(searchParams: {
@@ -30,7 +30,7 @@ export class CustomerController {
       });
 
       if (customer && customer[0]) {
-        if (await customer[0].compareEncryptedPassword(searchParams.password)) {
+        if (customer[0].compareEncryptedPassword(searchParams.password)) {
           result = {
             status: HttpStatus.OK,
             message: 'customer_search_by_credentials_success',

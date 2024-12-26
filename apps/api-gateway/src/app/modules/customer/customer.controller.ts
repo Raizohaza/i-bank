@@ -57,7 +57,7 @@ export class CustomerController {
   constructor(
     @Inject('CUSTOMER_SERVICE') private readonly customerService: ClientProxy,
     @Inject('TOKEN_SERVICE') private readonly tokenServiceClient: ClientProxy
-  ) {}
+  ) { }
 
   @Get('findAll')
   @ApiOkResponse({

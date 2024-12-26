@@ -6,8 +6,6 @@ import {
 } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { ClientProxyFactory } from '@nestjs/microservices';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { AuthGuard } from './guards/authorization.guard';
 import { PermissionGuard } from './guards/permission.guard';
 import { RolesGuard } from './guards/roles.guard';
@@ -27,9 +25,7 @@ import { AuthRefreshGuard } from './guards/authorizationRefresh.guard';
     UtilsModule,
     EventEmitterModule.forRoot(),
   ],
-  controllers: [AppController],
   providers: [
-    AppService,
     ConfigService,
     SendgridService,
     {

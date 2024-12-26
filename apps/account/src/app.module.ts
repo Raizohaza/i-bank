@@ -3,4 +3,4 @@ import { AccountModule } from './account/account.module';
 @Module({
   imports: [AccountModule],
 })
-export class AppModule {}
+export class AppModule { }

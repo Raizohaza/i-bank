@@ -12,8 +12,7 @@
         "compiler": "tsc",
         "outputPath": "dist/apps/permission",
         "main": "apps/permission/src/main.ts",
-        "tsConfig": "apps/permission/tsconfig.app.json",
-        "assets": ["apps/permission/src/assets"]
+        "tsConfig": "apps/permission/tsconfig.app.json"
       },
       "configurations": {
         "production": {
